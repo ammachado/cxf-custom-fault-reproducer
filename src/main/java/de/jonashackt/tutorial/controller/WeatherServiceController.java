@@ -13,7 +13,7 @@ import de.jonashackt.tutorial.transformation.GetCityForecastByZIPOutMapper;
  *  So it decouples the WSDL-generated Classes from the internal Classes - for when the former changes,
  *  nothing or only the mapping has to be changed
  */ 
-@Component
+
 public class WeatherServiceController {
  
     public ForecastReturn getCityForecastByZIP(ForecastRequest forecastRequest) {

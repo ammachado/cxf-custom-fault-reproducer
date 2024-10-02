@@ -1,13 +1,12 @@
 package de.jonashackt.tutorial.endpoint;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+
 
 import java.io.IOException;
 
 
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -22,6 +21,9 @@ import de.codecentric.namespace.weatherservice.general.GetCityForecastByZIP;
 import de.jonashackt.tutorial.SimpleBootCxfSystemTestApplication;
 import de.jonashackt.tutorial.common.XmlUtils;
 import de.jonashackt.tutorial.common.InternalBusinessException;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 
 @SpringBootTest(classes=SimpleBootCxfSystemTestApplication.class, webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)

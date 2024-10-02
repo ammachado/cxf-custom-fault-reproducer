@@ -7,12 +7,14 @@ import org.springframework.context.annotation.Import;
 import de.codecentric.namespace.weatherservice.WeatherService;
 import de.jonashackt.tutorial.configuration.ApplicationConfiguration;
 import de.jonashackt.tutorial.endpoint.WeatherServiceEndpoint;
+import org.springframework.context.annotation.Primary;
 
 @Configuration
 @Import(ApplicationConfiguration.class)
 public class ApplicationTestConfiguration {
 
     @Bean
+    @Primary
     public WeatherService weatherService() {
         return new WeatherServiceEndpoint();
     }

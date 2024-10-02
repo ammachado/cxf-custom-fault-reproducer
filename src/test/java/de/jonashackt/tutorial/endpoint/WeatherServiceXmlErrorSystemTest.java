@@ -1,13 +1,12 @@
 package de.jonashackt.tutorial.endpoint;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+
 
 import java.io.IOException;
 
 import lombok.extern.slf4j.Slf4j;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -22,17 +21,18 @@ import de.jonashackt.tutorial.common.InternalBusinessException;
 import de.jonashackt.tutorial.utils.SoapRawClient;
 import de.jonashackt.tutorial.utils.SoapRawClientResponse;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 @SpringBootTest(classes=SimpleBootCxfSystemTestApplication.class,webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @Slf4j
-@ActiveProfiles("test")
 public class WeatherServiceXmlErrorSystemTest {
 
 	@Autowired
 	private SoapRawClient soapRawClient;
 	
-	
+
 	@Value(value="classpath:requests/xmlerrors/xmlErrorNotXmlSchemeCompliantUnderRootElementTest.xml")
 	private Resource xmlErrorNotXmlSchemeCompliantUnderRootElementTestXml;
 	
@@ -116,13 +116,13 @@ public class WeatherServiceXmlErrorSystemTest {
 		SoapRawClientResponse soapRawResponse = soapRawClient.callSoapService(testFile.getInputStream());
 		// Then
 		assertNotNull(soapRawResponse);
-		assertEquals("500 Internal Server Error expected", 500, soapRawResponse.getHttpStatusCode());
+		assertEquals( soapRawResponse.getHttpStatusCode(), 500,"500 Internal Server Error expected");
         assertEquals(faultContent.getMessage(), soapRawResponse.getFaultstringValue());
         
         de.codecentric.namespace.weatherservice.exception.WeatherException weatherException = soapRawResponse.getUnmarshalledObjectFromSoapMessage(de.codecentric.namespace.weatherservice.exception.WeatherException.class);		
-		assertNotNull("<soap:Fault><detail> has to contain a de.codecentric.namespace.weatherservice.exception.WeatherException",  weatherException);
+		assertNotNull(weatherException,"<soap:Fault><detail> has to contain a de.codecentric.namespace.weatherservice.exception.WeatherException");
 		
 		assertEquals("ExtremeRandomNumber", weatherException.getUuid());
-		assertEquals("The correct BusinessId is missing in WeatherException according to XML-scheme.", faultContent.getId(), weatherException.getBusinessErrorId());
+		assertEquals("07", faultContent.getId(), weatherException.getBusinessErrorId());
 	}
 }

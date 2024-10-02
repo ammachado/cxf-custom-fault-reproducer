@@ -1,12 +1,15 @@
 package de.jonashackt.tutorial.endpoint;
 
 import static de.jonashackt.tutorial.utils.TestHelper.generateDummyRequest;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+
+import de.jonashackt.tutorial.SimpleBootCxfSystemTestApplication;
+
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -16,8 +19,8 @@ import de.codecentric.namespace.weatherservice.general.ForecastRequest;
 import de.codecentric.namespace.weatherservice.general.ForecastReturn;
 import de.jonashackt.tutorial.WebServiceIntegrationTestConfiguration;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes=WebServiceIntegrationTestConfiguration.class)
+
+@SpringBootTest(classes= SimpleBootCxfSystemTestApplication.class,webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class WeatherServiceIntegrationTest {
 
     @Autowired

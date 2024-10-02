@@ -27,12 +27,12 @@ public final class WeatherSoapFaultHelper {
 
 		//Commenting this and call setCustomSoapBody
 
-//		String originalFaultMessage = exceptionFault.getMessage();
-//		exceptionFault.setMessage(faultContent.getMessage());
-//		exceptionFault.setDetail(createFaultDetailWithWeatherException(originalFaultMessage, faultContent));
-//		message.setContent(Exception.class, exceptionFault);
+		String originalFaultMessage = exceptionFault.getMessage();
+		exceptionFault.setMessage(faultContent.getMessage());
+		exceptionFault.setDetail(createFaultDetailWithWeatherException(originalFaultMessage, faultContent));
+		message.setContent(Exception.class, exceptionFault);
 
-		setCustomSoapBody(message);  //Cigna Added method to set custom SOAPBody, but nothing was added.
+		//setCustomSoapBody(message);  //Cigna Added method to set custom SOAPBody, but nothing was added.
 
 
 
