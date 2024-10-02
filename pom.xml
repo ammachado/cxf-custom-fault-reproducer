@@ -6,99 +6,69 @@
 	<groupId>de.jonashackt.tutorial</groupId>
 	<artifactId>step5_custom-soap-fault</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<packaging>jar</packaging>
-
-
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java.version>17</java.version>
 		<cxf.version>4.0.4.fuse-redhat-00025</cxf.version>
-		<fluent-hc.version>4.5.2</fluent-hc.version>
-		<spring.boot.version>3.2.8</spring.boot.version>
+		<spring.boot.version>3.2.9</spring.boot.version>
 	</properties>
 
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>com.redhat.camel.springboot.platform</groupId>
+				<artifactId>camel-spring-boot-bom</artifactId>
+				<version>4.4.0.redhat-00033</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
 	<dependencies>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-devtools</artifactId>
-			<version>${spring.boot.version}</version>
-		</dependency>
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter</artifactId>
-			<version>${spring.boot.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
-			<version>${spring.boot.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>ch.qos.logback</groupId>
-					<artifactId>logback-classic</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.cxf</groupId>
-			<artifactId>cxf-spring-boot-starter-jaxws</artifactId>
-			<version>${cxf.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>jakarta.xml.bind</groupId>
 			<artifactId>jakarta.xml.bind-api</artifactId>
-			<version>3.0.1</version>
 		</dependency>
 		
 		<!-- Apache CXF -->
 		<dependency>
 			<groupId>org.apache.cxf</groupId>
-			<artifactId>cxf-rt-frontend-jaxws</artifactId>
-			<version>${cxf.version}</version>
+			<artifactId>cxf-spring-boot-starter-jaxws</artifactId>
+		</dependency>
+
+		<!-- Dev Tools -->
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>1.18.34</version>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.cxf</groupId>
-			<artifactId>cxf-rt-transports-http</artifactId>
-			<version>${cxf.version}</version>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-devtools</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>com.sun.xml.messaging.saaj</groupId>
-			<artifactId>saaj-impl</artifactId>
-			<version>3.0.4</version>
-		</dependency>
-				
+
 		<!-- Testing -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
-			<version>${spring.boot.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>httpclient</artifactId>
+			<groupId>org.apache.httpcomponents.client5</groupId>
+			<artifactId>httpclient5-fluent</artifactId>
 			<scope>test</scope>
-			<version>4.5.14</version>
-
-		</dependency>
-		<dependency>
-			<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>fluent-hc</artifactId>
-			<version>${fluent-hc.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
-			<version>${spring.boot.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.projectlombok</groupId>
-			<artifactId>lombok</artifactId>
-			<version>1.18.34</version>
 		</dependency>
 
 	</dependencies>
@@ -106,43 +76,10 @@
 	<build>
 		<plugins>
 			<plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
 				<version>${spring.boot.version}</version>
-            </plugin>
-			<!-- Generate Java-Classes inkl. JAXB-Bindings from WSDL & imported XSD -->
-			<!-- See Doku at http://www.mojohaus.org/jaxws-maven-plugin/usage.html -->
-<!--			<plugin>-->
-<!--				<groupId>org.jvnet.jaxb</groupId>-->
-<!--				<artifactId>jaxb-maven-plugin</artifactId>-->
-<!--				<executions>-->
-<!--					<execution>-->
-<!--						<id>generate</id>-->
-<!--						<goals>-->
-<!--							<goal>generate</goal>-->
-<!--						</goals>-->
-<!--					</execution>-->
-<!--				</executions>-->
-<!--				<version>2.0.14</version>-->
-<!--				<configuration>-->
-<!--					&lt;!&ndash; See http://www.mojohaus.org/jaxws-maven-plugin/wsimport-mojo.html &ndash;&gt;-->
-<!--					<wsdlUrls>-->
-<!--						<wsdlUrl>src/main/resources/service-api-definition/Weather1.0.wsdl</wsdlUrl>-->
-<!--					</wsdlUrls>-->
-<!--					<sourceDestDir>target/generated-sources/wsdlimport/Weather1.0</sourceDestDir>-->
-<!--					&lt;!&ndash; For accessing the imported schema, see https://netbeans.org/bugzilla/show_bug.cgi?id=241570 &ndash;&gt;-->
-<!--					<vmArgs>-->
-<!--						<vmArg>-Djavax.xml.accessExternalSchema=all</vmArg>-->
-<!--					</vmArgs>-->
-<!--				</configuration>-->
-<!--				<executions>-->
-<!--					<execution>-->
-<!--						<goals>-->
-<!--							<goal>wsimport</goal>-->
-<!--						</goals>-->
-<!--					</execution>-->
-<!--				</executions>-->
-<!--			</plugin>-->
+			</plugin>
 			<plugin>
 				<groupId>org.apache.cxf</groupId>
 				<artifactId>cxf-codegen-plugin</artifactId>
@@ -162,64 +99,14 @@
 						<allowElementRefs>true</allowElementRefs>
 						<autoNameResolution>true</autoNameResolution>
 						<markGenerated>true</markGenerated>
-						<noTypes>true</noTypes>
 					</defaultOptions>
 					<wsdlOptions>
 						<wsdlOption>
 							<wsdl>${project.basedir}/src/main/resources/service-api-definition/Weather1.0.wsdl</wsdl>
 							<wsdlLocation>classpath:service-api-definition/Weather1.0.wsdl</wsdlLocation>
-<!--							<bindingFiles>-->
-<!--								<bindingFile>${project.basedir}/src/main/resources/xjb/binding.xjb</bindingFile>-->
-<!--							</bindingFiles>-->
 						</wsdlOption>
 					</wsdlOptions>
 				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.jvnet.jaxb</groupId>
-				<artifactId>jaxb-maven-plugin</artifactId>
-				<version>4.0.8</version>
-				<executions>
-					<execution>
-						<id>generate</id>
-						<goals>
-							<goal>generate</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<schemaDirectory>${project.basedir}/src/main/resources/service-api-definition</schemaDirectory>
-					<schemaIncludes>
-						<schemaInclude>**/*.wsdl</schemaInclude>
-					</schemaIncludes>
-					<useDependenciesAsEpisodes>true</useDependenciesAsEpisodes>
-<!--					<bindingDirectory>${project.basedir}/src/main/resources/xjb</bindingDirectory>-->
-
-
-				</configuration>
-			</plugin>
-<!--			<plugin>-->
-<!--		        <groupId>org.codehaus.mojo</groupId>-->
-<!--		        <artifactId>build-helper-maven-plugin</artifactId>-->
-<!--		        <executions>-->
-<!--		          <execution>-->
-<!--		            <id>add-source</id>-->
-<!--		            <phase>generate-sources</phase>-->
-<!--		            <goals>-->
-<!--		              <goal>add-source</goal>-->
-<!--		            </goals>-->
-<!--		            <configuration>-->
-<!--		              <sources>-->
-<!--		                <source>target/generated-sources/wsdlimport/Weather1.0</source>-->
-<!--		              </sources>-->
-<!--		            </configuration>-->
-<!--		          </execution>-->
-<!--		        </executions>-->
-<!--			</plugin>-->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jar-plugin</artifactId>
-				<version>3.4.1</version>
 			</plugin>
 		</plugins>
 	</build>

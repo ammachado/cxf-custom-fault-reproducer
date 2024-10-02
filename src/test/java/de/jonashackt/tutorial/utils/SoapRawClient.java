@@ -1,12 +1,12 @@
 package de.jonashackt.tutorial.utils;
 
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 
-import org.apache.http.Consts;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.fluent.Request;
-import org.apache.http.client.fluent.Response;
-import org.apache.http.entity.ContentType;
+import org.apache.hc.client5.http.fluent.Request;
+import org.apache.hc.client5.http.fluent.Response;
+import org.apache.hc.core5.http.ContentType;
+import org.apache.hc.core5.http.HttpResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -28,29 +28,36 @@ public class SoapRawClient {
 	}
 	
 	public SoapRawClientResponse callSoapService(InputStream xmlFile) throws InternalBusinessException {
-		SoapRawClientResponse rawSoapResponse = new SoapRawClientResponse();
+		SoapRawClientResponse rawSoapResponse;
 		
 		LOGGER.debug("Calling SoapService with POST on Apache HTTP-Client and configured URL: {}", soapServiceUrl);
 		
-		try {   
+		try {
 			Response httpResponseContainer = Request
-					.Post(soapServiceUrl)
+					.post(soapServiceUrl)
 					.bodyStream(xmlFile, contentTypeTextXmlUtf8())
 					.addHeader("SOAPAction", "\"" + soapAction + "\"")
 					.execute();
-			
-			HttpResponse httpResponse = httpResponseContainer.returnResponse();			
-			rawSoapResponse.setHttpStatusCode(httpResponse.getStatusLine().getStatusCode());
-			rawSoapResponse.setHttpResponseBody(XmlUtils.parseFileStream2Document(httpResponse.getEntity().getContent()));
-			
+
+			rawSoapResponse = httpResponseContainer.handleResponse(response -> {
+				SoapRawClientResponse soapResponse = new SoapRawClientResponse();
+				soapResponse.setHttpStatusCode(response.getCode());
+				try {
+					soapResponse.setHttpResponseBody(XmlUtils.parseFileStream2Document(response.getEntity().getContent()));
+				} catch (Exception ignored) {
+				}
+				return soapResponse;
+			});
+
 		} catch (Exception exception) {
-			throw new InternalBusinessException("Some Error accured while trying to Call SoapService for test: " + exception.getMessage());
-		}		
+			throw new InternalBusinessException("Some Error occurred while trying to Call SoapService for test: " + exception.getMessage());
+		}
+
 		return rawSoapResponse;
 	}
 
 	private ContentType contentTypeTextXmlUtf8() {
-		return ContentType.create(ContentType.TEXT_XML.getMimeType(), Consts.UTF_8);
+		return ContentType.create(ContentType.TEXT_XML.getMimeType(), StandardCharsets.UTF_8);
 	}
 	
 }
