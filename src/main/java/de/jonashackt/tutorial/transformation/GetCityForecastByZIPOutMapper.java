@@ -7,10 +7,7 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import de.codecentric.namespace.weatherservice.datatypes.ArrayOfForecast;
-import de.codecentric.namespace.weatherservice.datatypes.Forecast;
-import de.codecentric.namespace.weatherservice.datatypes.POP;
-import de.codecentric.namespace.weatherservice.datatypes.Temp;
+import de.codecentric.namespace.weatherservice.datatypes.*;
 import de.codecentric.namespace.weatherservice.general.ForecastReturn;
 
 public final class GetCityForecastByZIPOutMapper {
@@ -25,6 +22,13 @@ public final class GetCityForecastByZIPOutMapper {
 		forecastReturn.setSuccess(true);
 		forecastReturn.setWeatherStationCity("Weimar");
 		forecastReturn.setForecastResult(generateForecastResult(forecastReturn.getCity()));
+
+		MessageDetailType messageDetail = new MessageDetailType();
+		MessageDetailsType details =  new MessageDetailsType();
+		details.getMessageDetail().add(messageDetail);
+		InvocationOutcomeType outcome = new InvocationOutcomeType();
+		outcome.setMessageDetails(details);
+		forecastReturn.setInvocationOutcome(outcome);
 		return forecastReturn;
     }
 

@@ -9,6 +9,8 @@
       
       <s:import namespace="http://www.w3.org/2005/05/xmlmime"
                 schemaLocation="w3c-xmlmime-definition.xsd"/>
+
+
       
       <s:complexType name="WeatherOverviewPdf">
         <s:sequence>

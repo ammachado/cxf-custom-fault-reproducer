@@ -9,6 +9,8 @@
       
       <s:import namespace="http://www.codecentric.de/namespace/weatherservice/datatypes"
                 schemaLocation="weather-datatypes.xsd"/>
+  <s:import namespace="http://www.codecentric.de/namespace/weatherservice/datatypes"
+            schemaLocation="InvocationOutcome_1_0.xsd"/>
       
       <s:element name="GetWeatherInformation">
         <s:complexType>
@@ -22,8 +24,11 @@
         <s:complexType>
           <s:sequence>
             <s:element minOccurs="0" maxOccurs="1" name="GetWeatherInformationResult" type="general:WeatherInformationReturn"/>
+
           </s:sequence>
+
         </s:complexType>
+
       </s:element>
       
       <s:complexType name="WeatherInformationReturn">
@@ -31,6 +36,8 @@
           <s:element minOccurs="1" maxOccurs="1" name="Success" type="s:boolean"/>
           <s:element minOccurs="0" maxOccurs="1" name="ResponseText" type="s:string"/>
           <s:element minOccurs="0" maxOccurs="1" name="WeatherOverviewPdf" type="datatypes:WeatherOverviewPdf"/>
+          <s:element minOccurs="0" maxOccurs="1" name="invocationOutcome" type="datatypes:InvocationOutcomeType"/>
+
         </s:sequence>
       </s:complexType>
       
@@ -46,6 +53,9 @@
         <s:complexType>
           <s:sequence>
             <s:element minOccurs="0" maxOccurs="1" name="GetCityForecastByZIPResult" type="general:ForecastReturn"/>
+
+
+
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -77,6 +87,7 @@
           <s:element minOccurs="0" maxOccurs="1" name="City" type="s:string"/>
           <s:element minOccurs="0" maxOccurs="1" name="WeatherStationCity" type="s:string"/>
           <s:element minOccurs="0" maxOccurs="1" name="ForecastResult" type="datatypes:ArrayOfForecast"/>
+            <s:element minOccurs="0" maxOccurs="1" name="InvocationOutcome" type="datatypes:InvocationOutcomeType"/>
         </s:sequence>
       </s:complexType>
       
@@ -112,6 +123,9 @@
           <s:element minOccurs="0" maxOccurs="1" name="Visibility" type="s:string"/>
           <s:element minOccurs="0" maxOccurs="1" name="WindChill" type="s:string"/>
           <s:element minOccurs="0" maxOccurs="1" name="Remarks" type="s:string"/>
+            <s:element minOccurs="0" maxOccurs="1" name="InvocationOutcome" type="datatypes:InvocationOutcomeType"/>
+
+
         </s:sequence>
       </s:complexType>
       

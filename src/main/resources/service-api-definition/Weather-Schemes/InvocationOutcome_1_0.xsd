@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright (c) 2007  CIGNA Corporation. All Rights Reserved. - InvocationOutcome_1_0.xsd -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+		   xmlns="http://www.codecentric.de/namespace/weatherservice/datatypes"
+		   xmlns:datatypes="http://www.codecentric.de/namespace/weatherservice/datatypes"
+		   xmlns:mime="http://www.w3.org/2005/05/xmlmime"
+		   xmlns:tns="http://www.codecentric.de/namespace/weatherservice/datatypes"
+		   targetNamespace="http://www.codecentric.de/namespace/weatherservice/datatypes"
+		   elementFormDefault="qualified"
+		   version="1.0">
+	<xs:complexType name="InvocationOutcomeType">
+		<xs:annotation>
+			<xs:documentation>This structure captures the outcome of a service invocation for a single unit of work.  It can include classes of services like inquiry, update, task-oriented and process-oriented.  The structure provides both an overall outcome and a detailed area for providing further context and should be the first direct child in the root of the overall response.  The service response will follow the outcome.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="serviceReferenceId" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>This element is populated based on a request reference Id that was sent in the original request.  It provides traceability back to the original request for problem determination.  This element may not exist if problems during the invocation prevent the service provider from populating this element.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="code" type="xs:int">
+				<xs:annotation>
+					<xs:documentation>Overall code.   Optional if, tns:messageDetails is used to convey multiple invocation outcomes.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="message" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Overall invocation message.  Optional if, tns:messageDetails is used to convey multiple invocation outcomes.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="messageDetails" type="tns:MessageDetailsType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>An array populated with message details.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="InvocationOutcomeOverallType">
+		<xs:annotation>
+			<xs:documentation>This structure captures the overall outcome of a service invocation and should be the first direct child in the root of the overall response.  If this structure covers multiple units of work for classes of services like inquiry, update, task-oriented and process-oriented, it should be accompanied by InvocationOutcomeDetailType and should be specified for each unit of work..</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="serviceReferenceId" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>This element is populated based on a request reference Id that was sent in the original request.  It provides traceability back to the original request for problem determination.  This element may not exist if problems during the invocation prevent the service provider from populating this element.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="code" type="xs:int">
+				<xs:annotation>
+					<xs:documentation>Overall code.   Optional if, tns:messageDetails is used to convey multiple invocation outcomes.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="message" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Overall invocation message.  Optional if, tns:messageDetails is used to convey multiple invocation outcomes.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="InvocationOutcomeDetailType">
+		<xs:annotation>
+			<xs:documentation>The structure covers multiple units of work for classes of services like inquiry, update, task-oriented and process-oriented.  It captures the detailed outcome of a service invocation and should be specified for each unit of work.  It must be preceeded by InvocationOutcomeOverallType if an overall code is needed.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="messageDetails" type="tns:MessageDetailsType">
+				<xs:annotation>
+					<xs:documentation>An array populated with message details.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="MessageDetailsType">
+		<xs:annotation>
+			<xs:documentation>The structure covers multiple message details about the processing of this service invocation.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="maxExceeded" type="xs:boolean" default="0">
+				<xs:annotation>
+					<xs:documentation>If the the max allowed limit on the tns:messageDetail array is reached this boolean is set to 1.  The default is 0.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="messageDetail" type="tns:MessageDetailType" maxOccurs="50">
+				<xs:annotation>
+					<xs:documentation>An array populated with invocation details.  Messages pertaining to data validations, warnings, update transactions and even details that are techincal in nature can be captured here.  The technical details should be used as pointers for support personnel and not for all the gory system details.  MQ errors, other infrastructure messages are also included.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="MessageDetailType">
+		<xs:annotation>
+			<xs:documentation>The structure covers a single message detail about the processing of this service invocation.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="id" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>This element is intended mainly for, but not limited to, update type services.  For instance, if the update involved changing multiple addresses, a unique identifier from the request payload, for each address, is copied to tns:id.  This element then coupled with technicalReturnCode and message will convey the outcome of each update transaction.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="technicalSeverityCode" default="NS" type="tns:TechnicalSeverityCodeType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>This element is intended to provide additional meaning if the intent is to group technical return codes and their meaning.  NS is the default if the code is not set but the provider meant to set it.  NS= Not Set, F=Fatal, E=Error, W=Warning, I=Informational</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="technicalReturnCode" type="xs:int">
+				<xs:annotation>
+					<xs:documentation>A code that conveys the outcome of the service invocation.  If, as mentioned above, it is coupled with  tns:id; it conveys the outcome of a specific request.  This code, without tns:id, can be used for validation messages, warnings etc.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="technicalReturnMessage" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Message tied to the code element above.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="TechnicalSeverityCodeType">
+		<xs:annotation>
+			<xs:documentation>Theses are the valid values to add meaning to the group technical return codes.  NS is the default if the code is not set but the provider meant to set it.  NS= Not Set, F=Fatal, E=Error, W=Warning, I=Informational</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="NS"/>
+			<xs:enumeration value="F"/>
+			<xs:enumeration value="E"/>
+			<xs:enumeration value="W"/>
+			<xs:enumeration value="I"/>
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>

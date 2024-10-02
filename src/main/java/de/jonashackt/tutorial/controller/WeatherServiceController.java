@@ -1,5 +1,6 @@
 package de.jonashackt.tutorial.controller;
 
+import de.codecentric.namespace.weatherservice.general.WeatherReturn;
 import org.springframework.stereotype.Component;
 
 import de.codecentric.namespace.weatherservice.general.ForecastRequest;
@@ -27,7 +28,7 @@ public class WeatherServiceController {
 	/*
 	 * Other Methods would follow here...
 	 */
-	//public WeatherReturn getCityWeatherByZIP(ForecastRequest forecastRequest) throws BusinessException {}
+	//public WeatherReturn getCityWeatherByZIP(ForecastRequest forecastRequest) throws Exception {}
 
 	//public WeatherInformationReturn getWeatherInformation(String zip) throws BusinessException {}
 }
