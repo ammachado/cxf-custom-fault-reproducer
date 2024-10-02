@@ -1,0 +1,5 @@
+###
+POST http://localhost:8080/soap-api/WeatherSoapService_1.0
+Content-Type: application/xml
+
+< GetCityForecastByZIPTest.xml

@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Copyright (c) 2007  CIGNA Corporation. All Rights Reserved. - InvocationOutcome_1_0.xsd -->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
 		   xmlns="http://www.codecentric.de/namespace/weatherservice/datatypes"
-		   xmlns:datatypes="http://www.codecentric.de/namespace/weatherservice/datatypes"
-		   xmlns:mime="http://www.w3.org/2005/05/xmlmime"
 		   xmlns:tns="http://www.codecentric.de/namespace/weatherservice/datatypes"
 		   targetNamespace="http://www.codecentric.de/namespace/weatherservice/datatypes"
 		   elementFormDefault="qualified"
@@ -20,7 +17,7 @@
 			</xs:element>
 			<xs:element name="code" type="xs:int">
 				<xs:annotation>
-					<xs:documentation>Overall code.   Optional if, tns:messageDetails is used to convey multiple invocation outcomes.</xs:documentation>
+					<xs:documentation>Overall code.  Optional if, tns:messageDetails is used to convey multiple invocation outcomes.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="message" type="xs:string">
