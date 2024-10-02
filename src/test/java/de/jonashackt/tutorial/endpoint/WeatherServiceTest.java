@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -16,7 +17,7 @@ import de.codecentric.namespace.weatherservice.general.ForecastReturn;
 import de.jonashackt.tutorial.ApplicationTestConfiguration;
 
 
-@ContextConfiguration(classes=ApplicationTestConfiguration.class)
+@SpringBootTest(classes=ApplicationTestConfiguration.class)
 public class WeatherServiceTest {
 
     @Autowired

@@ -3,6 +3,7 @@ package de.jonashackt.tutorial.configuration.customsoapfaults;
 
 import jakarta.xml.bind.UnmarshalException;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.cxf.binding.soap.SoapMessage;
 import org.apache.cxf.binding.soap.interceptor.AbstractSoapInterceptor;
 import org.apache.cxf.interceptor.Fault;
@@ -14,6 +15,7 @@ import com.ctc.wstx.exc.WstxUnexpectedCharException;
 import de.jonashackt.tutorial.common.FaultConst;
 import de.jonashackt.tutorial.logging.SoapFrameworkLogger;
 
+@Slf4j
 public class CustomSoapFaultInterceptor extends AbstractSoapInterceptor {
 
 	private static final SoapFrameworkLogger LOG = SoapFrameworkLogger.getLogger(CustomSoapFaultInterceptor.class);
@@ -24,14 +26,18 @@ public class CustomSoapFaultInterceptor extends AbstractSoapInterceptor {
 	
 	@Override
 	public void handleMessage(SoapMessage soapMessage) throws Fault {
+
+		log.error("Running Custom Interceptor ");
 	    Fault fault = (Fault) soapMessage.getContent(Exception.class);
 	    Throwable faultCause = fault.getCause();
 	    String faultMessage = fault.getMessage();
 
-	    if (containsFaultIndicatingNotSchemeCompliantXml(faultCause, faultMessage)) { 
+	    if (containsFaultIndicatingNotSchemeCompliantXml(faultCause, faultMessage)) {
+			log.error("Fault cause {} "+ faultMessage);
 	    	LOG.schemaValidationError(FaultConst.SCHEME_VALIDATION_ERROR, faultMessage);
 	    	WeatherSoapFaultHelper.buildWeatherFaultAndSet2SoapMessage(soapMessage, FaultConst.SCHEME_VALIDATION_ERROR);
 	    } else if (containsFaultIndicatingSyntacticallyIncorrectXml(faultCause)) {
+			log.error("Fault cause {} "+ faultMessage);
 	    	LOG.schemaValidationError(FaultConst.SYNTACTICALLY_INCORRECT_XML_ERROR, faultMessage);
 	    	WeatherSoapFaultHelper.buildWeatherFaultAndSet2SoapMessage(soapMessage, FaultConst.SYNTACTICALLY_INCORRECT_XML_ERROR);	        
 	    }

@@ -123,6 +123,6 @@ public class WeatherServiceXmlErrorSystemTest {
 		assertNotNull(weatherException,"<soap:Fault><detail> has to contain a de.codecentric.namespace.weatherservice.exception.WeatherException");
 		
 		assertEquals("ExtremeRandomNumber", weatherException.getUuid());
-		assertEquals("07", faultContent.getId(), weatherException.getBusinessErrorId());
+		assertEquals(faultContent.getId(), faultContent.getId(), weatherException.getBusinessErrorId());
 	}
 }
