@@ -111,19 +111,20 @@ class WeatherServiceXmlErrorSystemTest {
 		try (AutoCloseableSoftAssertions softly = new AutoCloseableSoftAssertions()) {
 			softly.assertThat(soapRawResponse)
 					.isNotNull()
-					.hasFieldOrPropertyWithValue("httpStatusCode", 200).describedAs("200 OK response expected")
-					.hasFieldOrPropertyWithValue("faultStringValue", null)
+					.hasFieldOrPropertyWithValue("httpStatusCode", 500).describedAs("200 OK response expected")
+					.hasFieldOrPropertyWithValue("faultStringValue", faultContent.getMessage())
 					;
 
-			Source stringSource = new StringSource(soapRawResponse.getBodyStringValue());
-			WeatherReturn unmarshalled = JAXB.unmarshal(stringSource, WeatherReturn.class);
-
-			softly.assertThat(unmarshalled)
-					.isNotNull()
-					.hasFieldOrProperty("invocationOutcome")
-					.extracting(WeatherReturn::getInvocationOutcome, InstanceOfAssertFactories.type(InvocationOutcomeType.class))
-					.hasFieldOrPropertyWithValue("message", faultContent.getMessage())
-					;
+			Document doc = soapRawResponse.getHttpResponseBody();
+			NodeList elementsByTagName = doc.getElementsByTagName("detail");
+			assertNotNull(elementsByTagName);
+			Node details = elementsByTagName.item(0).getFirstChild();
+			
+			JAXBElement<WeatherException> weatherJaxb = XmlUtils.unmarshallNode(details, WeatherException.class);
+			assertNotNull(weatherJaxb);
+			WeatherException weatherException = unmarshallNode.getValue();
+			assertNotNull(weatherException);
+			assertEquals("ExtremeRandomNumber", weatherException.getUuid());
 		}
 	}
 }
