@@ -1,24 +1,27 @@
 package my.example.customfault.endpoint;
 
 
-import de.codecentric.namespace.weatherservice.datatypes.InvocationOutcomeType;
-import de.codecentric.namespace.weatherservice.general.WeatherReturn;
-import my.example.customfault.SimpleBootCxfSystemTestApplication;
-import my.example.customfault.common.FaultConst;
-import my.example.customfault.utils.SoapRawClient;
-import my.example.customfault.utils.SoapRawClientResponse;
-import jakarta.xml.bind.JAXB;
-import lombok.extern.slf4j.Slf4j;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import org.assertj.core.api.AutoCloseableSoftAssertions;
-import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.Resource;
-import org.springframework.xml.transform.StringSource;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
-import javax.xml.transform.Source;
+import de.codecentric.namespace.weatherservice.exception.WeatherException;
+import jakarta.xml.bind.JAXBElement;
+import lombok.extern.slf4j.Slf4j;
+import my.example.customfault.SimpleBootCxfSystemTestApplication;
+import my.example.customfault.common.FaultConst;
+import my.example.customfault.common.XmlUtils;
+import my.example.customfault.utils.SoapRawClient;
+import my.example.customfault.utils.SoapRawClientResponse;
 
 
 @SpringBootTest(classes=SimpleBootCxfSystemTestApplication.class,webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
@@ -127,4 +130,7 @@ class WeatherServiceXmlErrorSystemTest {
 			assertEquals("ExtremeRandomNumber", weatherException.getUuid());
 		}
 	}
+	
+	
+	
 }
