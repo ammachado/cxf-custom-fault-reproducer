@@ -125,7 +125,7 @@ class WeatherServiceXmlErrorSystemTest {
 			
 			JAXBElement<WeatherException> weatherJaxb = XmlUtils.unmarshallNode(details, WeatherException.class);
 			assertNotNull(weatherJaxb);
-			WeatherException weatherException = unmarshallNode.getValue();
+			WeatherException weatherException = weatherJaxb.getValue();
 			assertNotNull(weatherException);
 			assertEquals("ExtremeRandomNumber", weatherException.getUuid());
 		}
