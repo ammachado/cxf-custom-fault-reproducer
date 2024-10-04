@@ -50,6 +50,7 @@ public class SoapRawClient {
 			});
 
 		} catch (Exception exception) {
+			exception.printStackTrace();
 			throw new InternalBusinessException("Some Error occurred while trying to Call SoapService for test: " + exception.getMessage());
 		}
 

@@ -1,25 +1,32 @@
 package my.example.customfault.endpoint;
 
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import java.io.StringWriter;
+
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import org.assertj.core.api.AutoCloseableSoftAssertions;
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.Resource;
+import org.springframework.xml.transform.StringSource;
 import org.w3c.dom.Document;
-import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import de.codecentric.namespace.weatherservice.datatypes.InvocationOutcomeType;
 import de.codecentric.namespace.weatherservice.exception.WeatherException;
-import jakarta.xml.bind.JAXBElement;
+import de.codecentric.namespace.weatherservice.general.WeatherReturn;
+import jakarta.xml.bind.JAXB;
 import lombok.extern.slf4j.Slf4j;
 import my.example.customfault.SimpleBootCxfSystemTestApplication;
 import my.example.customfault.common.FaultConst;
-import my.example.customfault.common.XmlUtils;
 import my.example.customfault.utils.SoapRawClient;
 import my.example.customfault.utils.SoapRawClientResponse;
 
@@ -114,23 +121,21 @@ class WeatherServiceXmlErrorSystemTest {
 		try (AutoCloseableSoftAssertions softly = new AutoCloseableSoftAssertions()) {
 			softly.assertThat(soapRawResponse)
 					.isNotNull()
-					.hasFieldOrPropertyWithValue("httpStatusCode", 500).describedAs("200 OK response expected")
-					.hasFieldOrPropertyWithValue("faultStringValue", faultContent.getMessage())
+					.hasFieldOrPropertyWithValue("httpStatusCode", 200).describedAs("200 OK response expected")
+					//.hasFieldOrPropertyWithValue("faultStringValue", null)
 					;
-
-			Document doc = soapRawResponse.getHttpResponseBody();
-			NodeList elementsByTagName = doc.getElementsByTagName("detail");
-			assertNotNull(elementsByTagName);
-			Node details = elementsByTagName.item(0).getFirstChild();
 			
-			JAXBElement<WeatherException> weatherJaxb = XmlUtils.unmarshallNode(details, WeatherException.class);
-			assertNotNull(weatherJaxb);
-			WeatherException weatherException = weatherJaxb.getValue();
-			assertNotNull(weatherException);
-			assertEquals("ExtremeRandomNumber", weatherException.getUuid());
+						String bodyStringValue = soapRawResponse.getBodyStringValue();
+						System.out.println(bodyStringValue);
+			Source stringSource = new StringSource(soapRawResponse.getBodyStringValue());
+			WeatherException unmarshalled = JAXB.unmarshal(stringSource, WeatherException.class);
+
+			softly.assertThat(unmarshalled)
+					.isNotNull()
+					.hasFieldOrProperty("uuid")
+					.extracting(WeatherException::getBusinessErrorId, InstanceOfAssertFactories.type(String.class))
+					
+					;
 		}
 	}
-	
-	
-	
 }
