@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+		   xmlns="http://www.codecentric.de/namespace/weatherservice/datatypes"
+		   xmlns:tns="http://www.codecentric.de/namespace/weatherservice/datatypes"
+		   targetNamespace="http://www.codecentric.de/namespace/weatherservice/datatypes"
+		   elementFormDefault="qualified"
+		   version="1.0">
+	<xs:complexType name="FunctionalContextType">
+		<xs:sequence>
+			<xs:element name="consumerName" type="xs:string"/>
+			<xs:element name="userPrincipal" type="tns:UserPrincipalType" minOccurs="0"/>
+			<xs:element name="target" type="tns:TargetType"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="TargetType">
+		<xs:sequence>
+			<xs:element name="serviceName" type="xs:string"/>
+			<xs:element name="serviceOperation" type="xs:string"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="UserPrincipalType">
+		<xs:sequence>
+			<xs:element name="userId" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>User id is the actual user who is using the consuming application.  It could also, for now, be substituted as the application id (on behalf of the scenario, etc.).</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="orgRole" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>This is the same as the enterprise role in LDAP.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="appRole" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>This is the role a user is assigned for a given application.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>

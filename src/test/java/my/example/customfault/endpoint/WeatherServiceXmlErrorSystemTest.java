@@ -1,14 +1,12 @@
 package my.example.customfault.endpoint;
 
-
-import java.io.StringWriter;
-
-import javax.xml.transform.Source;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-
+import de.codecentric.namespace.weatherservice.exception.WeatherException;
+import jakarta.xml.bind.JAXB;
+import lombok.extern.slf4j.Slf4j;
+import my.example.customfault.SimpleBootCxfSystemTestApplication;
+import my.example.customfault.common.FaultConst;
+import my.example.customfault.utils.SoapRawClient;
+import my.example.customfault.utils.SoapRawClientResponse;
 import org.assertj.core.api.AutoCloseableSoftAssertions;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
@@ -17,19 +15,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.Resource;
 import org.springframework.xml.transform.StringSource;
-import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
 
-import de.codecentric.namespace.weatherservice.datatypes.InvocationOutcomeType;
-import de.codecentric.namespace.weatherservice.exception.WeatherException;
-import de.codecentric.namespace.weatherservice.general.WeatherReturn;
-import jakarta.xml.bind.JAXB;
-import lombok.extern.slf4j.Slf4j;
-import my.example.customfault.SimpleBootCxfSystemTestApplication;
-import my.example.customfault.common.FaultConst;
-import my.example.customfault.utils.SoapRawClient;
-import my.example.customfault.utils.SoapRawClientResponse;
-
+import javax.xml.transform.Source;
 
 @SpringBootTest(classes=SimpleBootCxfSystemTestApplication.class,webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @Slf4j

@@ -73,6 +73,16 @@
 			<artifactId>spring-xml</artifactId>
 		</dependency>
 
+		<dependency>
+			<groupId>commons-chain</groupId>
+			<artifactId>commons-chain</artifactId>
+			<version>1.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+		</dependency>
+
 		<!-- Dev Tools -->
 		<dependency>
 			<groupId>org.projectlombok</groupId>
@@ -108,11 +118,11 @@
 					<release>17</release>
 				</configuration>
 			</plugin>
-			  <plugin>
-                               <groupId>org.apache.maven.plugins</groupId>
-                               <artifactId>maven-surefire-plugin</artifactId>
-                               <version>3.5.0</version>
-                       </plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>3.5.0</version>
+			</plugin>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
@@ -137,6 +147,14 @@
 						<allowElementRefs>true</allowElementRefs>
 						<autoNameResolution>true</autoNameResolution>
 						<markGenerated>true</markGenerated>
+						<extraargs>
+							<extraarg>-xjc-Xsetters</extraarg>
+							<extraarg>-xjc-Xdefault-value</extraarg>
+							<extraarg>-xjc-Xannotate</extraarg>
+							<extraarg>-xjc-Xfluent-api</extraarg>
+							<extraarg>-xjc-Xvalue-constructor</extraarg>
+							<extraarg>-xjc-Xjaxbindex</extraarg>
+						</extraargs>
 					</defaultOptions>
 					<wsdlOptions>
 						<wsdlOption>
@@ -145,6 +163,28 @@
 						</wsdlOption>
 					</wsdlOptions>
 				</configuration>
+				<dependencies>
+					<dependency>
+						<groupId>org.jvnet.jaxb</groupId>
+						<artifactId>jaxb-plugins</artifactId>
+						<version>4.0.8</version>
+					</dependency>
+					<dependency>
+						<groupId>org.jvnet.jaxb</groupId>
+						<artifactId>jaxb-plugin-annotate</artifactId>
+						<version>4.0.8</version>
+					</dependency>
+					<dependency>
+						<groupId>com.fasterxml.jackson.core</groupId>
+						<artifactId>jackson-annotations</artifactId>
+						<version>2.17.2</version>
+					</dependency>
+					<dependency>
+						<groupId>org.apache.commons</groupId>
+						<artifactId>commons-lang3</artifactId>
+						<version>3.17.0</version>
+					</dependency>
+				</dependencies>
 			</plugin>
 		</plugins>
 	</build>

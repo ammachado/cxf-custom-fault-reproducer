@@ -9,9 +9,13 @@
       
       <s:import namespace="http://www.codecentric.de/namespace/weatherservice/datatypes"
                 schemaLocation="weather-datatypes.xsd"/>
-  <s:import namespace="http://www.codecentric.de/namespace/weatherservice/datatypes"
-            schemaLocation="InvocationOutcome_1_0.xsd"/>
-      
+
+      <s:import namespace="http://www.codecentric.de/namespace/weatherservice/datatypes"
+                schemaLocation="InvocationOutcome_1_0.xsd"/>
+
+      <s:import namespace="http://www.codecentric.de/namespace/weatherservice/datatypes"
+                schemaLocation="RequestHeader_1_0.xsd"/>
+
       <s:element name="GetWeatherInformation">
         <s:complexType>
         	<s:sequence>
