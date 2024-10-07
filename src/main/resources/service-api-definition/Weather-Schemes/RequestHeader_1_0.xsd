@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+		   xmlns="http://www.codecentric.de/namespace/weatherservice/datatypes"
+		   xmlns:tns="http://www.codecentric.de/namespace/weatherservice/datatypes"
+		   targetNamespace="http://www.codecentric.de/namespace/weatherservice/datatypes"
+		   elementFormDefault="qualified"
+		   version="1.0">
+	<xs:include schemaLocation="FunctionalContext_1_0.xsd"/>
+	<xs:complexType name="RequestHeaderType">
+		<xs:sequence>
+			<xs:element name="serviceReferenceId" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>This element is a generated UUID placed in the request header for traceability back to the original request for problem determination.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="functionalContext" type="tns:FunctionalContextType"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="requestHeader" type="tns:RequestHeaderType"/>
+</xs:schema>

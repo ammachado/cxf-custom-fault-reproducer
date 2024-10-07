@@ -40,19 +40,19 @@ public class CustomSoapFaultInterceptor extends AbstractSoapInterceptor {
 	@Override
 	public void handleMessage(SoapMessage soapMessage) throws Fault {
 
-		log.error("Running Custom Interceptor ");
+		log.error("Running Custom Interceptor");
 		Fault fault = (Fault) soapMessage.getContent(Exception.class);
 		Throwable faultCause = fault.getCause();
 		String faultMessage = fault.getMessage();
 		boolean shouldSwapPayLoad = false;
 		if (containsFaultIndicatingNotSchemeCompliantXml(faultCause, faultMessage)) {
-			log.error("Fault cause {} " + faultMessage);
+			log.error("Fault cause {} ", faultMessage);
 			LOG.schemaValidationError(FaultConst.SCHEME_VALIDATION_ERROR, faultMessage);
 			shouldSwapPayLoad = true;
 			// WeatherSoapFaultHelper.buildWeatherFaultAndSet2SoapMessage(soapMessage,
 			// FaultConst.SCHEME_VALIDATION_ERROR);
 		} else if (containsFaultIndicatingSyntacticallyIncorrectXml(faultCause)) {
-			log.error("Fault cause {} " + faultMessage);
+			log.error("Fault cause {} ", faultMessage);
 			LOG.schemaValidationError(FaultConst.SYNTACTICALLY_INCORRECT_XML_ERROR, faultMessage);
 			shouldSwapPayLoad = true;
 			// WeatherSoapFaultHelper.buildWeatherFaultAndSet2SoapMessage(soapMessage,
@@ -61,8 +61,6 @@ public class CustomSoapFaultInterceptor extends AbstractSoapInterceptor {
 
 		if (shouldSwapPayLoad) {
 			Exchange exchange = soapMessage.getExchange();
-			String soapStr = null;
-			OutputStream os = soapMessage.getContent(OutputStream.class);
 			CachedStream cs = new CachedStream();
 			soapMessage.setContent(OutputStream.class, cs);
 			soapMessage.getInterceptorChain().doIntercept(soapMessage);
