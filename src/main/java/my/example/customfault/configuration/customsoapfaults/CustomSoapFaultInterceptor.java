@@ -1,17 +1,17 @@
 package my.example.customfault.configuration.customsoapfaults;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintWriter;
+import java.io.*;
 import java.util.Objects;
 import java.util.Optional;
 
 import org.apache.cxf.binding.soap.SoapMessage;
 import org.apache.cxf.binding.soap.interceptor.AbstractSoapInterceptor;
+import org.apache.cxf.binding.soap.interceptor.SoapPreProtocolOutInterceptor;
 import org.apache.cxf.interceptor.Fault;
 import org.apache.cxf.io.CachedOutputStream;
 import org.apache.cxf.message.Exchange;
 import org.apache.cxf.message.Message;
+import org.apache.cxf.message.MessageUtils;
 import org.apache.cxf.phase.Phase;
 import org.apache.cxf.transport.http.AbstractHTTPDestination;
 
@@ -24,6 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 import my.example.customfault.common.FaultConst;
 import my.example.customfault.common.SoapUtils;
 import my.example.customfault.logging.SoapFrameworkLogger;
+import org.w3c.dom.Element;
 
 @Slf4j
 public class CustomSoapFaultInterceptor extends AbstractSoapInterceptor {
@@ -32,73 +33,80 @@ public class CustomSoapFaultInterceptor extends AbstractSoapInterceptor {
 
     public CustomSoapFaultInterceptor() {
         super(Phase.PRE_STREAM);
+        addBefore(SoapPreProtocolOutInterceptor.class.getName());
     }
 
     @Override
     public void handleMessage(SoapMessage soapMessage) throws Fault {
-
-        log.debug("Running Custom Interceptor ...");
-        // Fault message
-        final Fault soapFault = (Fault) soapMessage.getContent(Exception.class);
-        final Throwable faultCause = soapFault.getCause();
-        final String faultMessage = soapFault.getMessage();
-
-        // Whether to customize SOAP response
-        boolean whetherToSwapSOAPMessage = false;
-        if (containsFaultIndicatingNotSchemeCompliantXml(faultCause, faultMessage)) {
-            LOG.schemaValidationError(FaultConst.SCHEME_VALIDATION_ERROR, faultMessage);
-            whetherToSwapSOAPMessage = true;
-//            WeatherSoapFaultHelper.buildWeatherFaultAndSet2SoapMessage(soapMessage, FaultConst.SCHEME_VALIDATION_ERROR);
-        } else if (isExpectedFaultCauseType(faultCause)) {
-            LOG.schemaValidationError(FaultConst.SYNTACTICALLY_INCORRECT_XML_ERROR, faultMessage);
-            whetherToSwapSOAPMessage = true;
-//            WeatherSoapFaultHelper.buildWeatherFaultAndSet2SoapMessage(soapMessage, FaultConst.SYNTACTICALLY_INCORRECT_XML_ERROR);
+        // Only interested in outbound messages
+        if (!MessageUtils.isOutbound(soapMessage)) {
+            return;
         }
 
-        if (whetherToSwapSOAPMessage) {
-            log.debug("Fault cause {}", faultMessage);
+        // Only interested in SOAP faults
+        final Exception exception = soapMessage.getContent(Exception.class);
+        if (exception instanceof Fault soapFault) {
+            // Fault message
+            final Throwable faultCause = soapFault.getCause();
+            final String faultMessage = soapFault.getMessage();
 
-            // SOAP exchange (containing both in- and out- messages)
-            final Exchange exchange = soapMessage.getExchange();
+            // Whether to customize SOAP response
+            FaultConst faultConst = null;
+            if (containsFaultIndicatingNotSchemeCompliantXml(faultCause, faultMessage)) {
+                faultConst = FaultConst.SCHEME_VALIDATION_ERROR;
+            } else if (isExpectedFaultCauseType(faultCause)) {
+                faultConst = FaultConst.SYNTACTICALLY_INCORRECT_XML_ERROR;
+            }
 
-            // Clear out the current output stream (by replacing it with a fresh OS)
-            CachedOutputStream cachedOutputStream = new CachedOutputStream();
-            soapMessage.setContent(OutputStream.class, cachedOutputStream);
-            // Run the interceptor on the current message
-            soapMessage.getInterceptorChain().doIntercept(soapMessage);
-            try {
-                cachedOutputStream.flush();
+            if (Objects.nonNull(faultConst)) {
+                log.debug("SOAP Fault message = {}", faultMessage);
+                LOG.schemaValidationError(faultConst, faultMessage);
 
-                // Obtain the cached output stream for enrichment
-                cachedOutputStream = (CachedOutputStream) soapMessage.getContent(OutputStream.class);
+                // Clear out the current output stream (by replacing it with a fresh OS)
+                CachedOutputStream cachedOutputStream = new CachedOutputStream();
+                soapMessage.setContent(OutputStream.class, cachedOutputStream);
+                // Run the interceptor on the current message
+                soapMessage.getInterceptorChain().doIntercept(soapMessage);
 
-                // Obtain the custom SOAP message for the given fault
-                final String soapMessageXml = SoapUtils.replaceFaultNodeAndGetSoapString(cachedOutputStream.getInputStream());
+                try {
+                    cachedOutputStream.flush();
 
-                // Ensure the outgoing message exists, if not use the fault message
-                Message outMessage = Optional.ofNullable(exchange.getOutMessage())
-                        .orElse(exchange.getOutFaultMessage());
-                exchange.setOutMessage(outMessage);
+                    // Obtain the cached output stream for enrichment
+                    cachedOutputStream = (CachedOutputStream) soapMessage.getContent(OutputStream.class);
 
-                // Clear the fault message
-                exchange.setOutFaultMessage(null);
+                    // Customized exception
+                    final Element weatherExceptionElement = WeatherSoapFaultHelper.buildWeatherFaultAndSet2SoapMessage(soapMessage, faultConst);
 
-                // Update HTTP response status code
-                outMessage.put(Message.RESPONSE_CODE, 200);
+                    // Obtain the custom SOAP XML for the given exception, built from the SOAP message stream
+                    final String soapMessageXml = SoapUtils.replaceFaultNodeAndGetSoapString(cachedOutputStream.getInputStream(), weatherExceptionElement);
 
-                // Obtain the underlying HTTP response
-                HttpServletResponse response = (HttpServletResponse) outMessage
-                        .get(AbstractHTTPDestination.HTTP_RESPONSE);
-                // SOAP content type
-                response.setContentType("text/xml");
+                    // SOAP exchange
+                    final Exchange exchange = soapMessage.getExchange();
 
-                // Write the SOAP XML to the HTTP response
-                final PrintWriter writer = response.getWriter();
-                writer.write(soapMessageXml);
-                outMessage.put(AbstractHTTPDestination.HTTP_RESPONSE, response);
-                writer.close();
-            } catch (Exception ex) {
-                log.error("Error while building outgoing HTTP response", ex);
+                    // Ensure the outgoing message exists, if not use the fault message
+                    final Message outMessage = Optional.ofNullable(exchange.getOutMessage()).orElse(exchange.getOutFaultMessage());
+
+                    // Clear the fault message
+                    exchange.setOutFaultMessage(null);
+                    exchange.setOutMessage(outMessage);
+
+                    // Update HTTP response status code
+                    outMessage.put(Message.RESPONSE_CODE, 200);
+
+                    // Obtain the underlying HTTP response
+                    HttpServletResponse httpResponse = (HttpServletResponse) outMessage.get(AbstractHTTPDestination.HTTP_RESPONSE);
+                    httpResponse.setContentType("text/xml");
+                    httpResponse.setCharacterEncoding("UTF-8");
+                    httpResponse.setStatus(200);
+
+                    // Write the SOAP XML to the HTTP response
+                    final PrintWriter httpPrintWriter = httpResponse.getWriter();
+                    httpPrintWriter.write(soapMessageXml);
+                    outMessage.put(AbstractHTTPDestination.HTTP_RESPONSE, httpResponse);
+                    httpPrintWriter.close();
+                } catch (Exception ex) {
+                    log.error("Error building outgoing customized SOAP response", ex);
+                }
             }
         }
     }
@@ -134,24 +142,5 @@ public class CustomSoapFaultInterceptor extends AbstractSoapInterceptor {
                 // If Xml-Header is invalid, there is a wrapped Cause in the original Cause we have to check
                 || Objects.nonNull(faultCause) && faultCause.getCause() instanceof WstxUnexpectedCharException
                 || faultCause instanceof IllegalArgumentException);
-    }
-
-    /**
-     * Implementation for support of caching an output stream temporarily.
-     */
-    private static class CachedStream extends CachedOutputStream {
-        public CachedStream() {
-            super();
-        }
-
-        protected void doFlush() throws IOException {
-            currentStream.flush();
-        }
-
-        protected void doClose() throws IOException {
-        }
-
-        protected void onWrite() throws IOException {
-        }
     }
 }
