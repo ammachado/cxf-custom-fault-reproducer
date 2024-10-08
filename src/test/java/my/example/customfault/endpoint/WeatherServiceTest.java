@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 
 import lombok.extern.slf4j.Slf4j;
+import my.example.customfault.SimpleBootCxfSystemTestApplication;
 import my.example.customfault.common.XmlUtils;
 import org.apache.hc.client5.http.fluent.Request;
 import org.apache.hc.client5.http.fluent.Response;
@@ -26,7 +27,7 @@ import org.w3c.dom.Document;
 
 import java.io.InputStream;
 
-@SpringBootTest(classes=ApplicationTestConfiguration.class)
+@SpringBootTest(classes= SimpleBootCxfSystemTestApplication.class, webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @Slf4j
 class WeatherServiceTest {
     String HOST = "http://localhost:8080";
@@ -57,6 +58,7 @@ class WeatherServiceTest {
         //log.warn("Local port {}", port);
         //log.warn("management port {} ", managementPort);
         InputStream xmlStream = getClass().getClassLoader().getResourceAsStream("requests/xmlerrors/xmlErrorNotXmlSchemeCompliantRootElementTest.xml");
+        //Thread.sleep(25000);
         Response httpResponseContainer = Request
                 .post(SOAP_SERVICE_URL)
                 .bodyStream(xmlStream, contentTypeTextXmlUtf8())
