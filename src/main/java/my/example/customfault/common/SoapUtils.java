@@ -12,27 +12,16 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import org.apache.commons.chain.impl.ContextBase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import de.codecentric.namespace.weatherservice.datatypes.InvocationOutcomeType;
-import de.codecentric.namespace.weatherservice.datatypes.MessageDetailType;
-import de.codecentric.namespace.weatherservice.datatypes.TechnicalSeverityCodeType;
-import de.codecentric.namespace.weatherservice.exception.WeatherException;
-import de.codecentric.namespace.weatherservice.general.GetCityWeatherByZIPResponse;
-import de.codecentric.namespace.weatherservice.general.WeatherReturn;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Marshaller;
-import my.example.customfault.configuration.customsoapfaults.InvocationBuilder;
-import my.example.customfault.configuration.customsoapfaults.internal.InvocationOutcomeRecorder;
-import my.example.customfault.configuration.customsoapfaults.internal.MsgDtlLocatorImpl;
-import my.example.customfault.configuration.customsoapfaults.internal.OutcomeLocatorImpl;
+
 
 public class SoapUtils {
 
