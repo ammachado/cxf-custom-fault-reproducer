@@ -1,13 +1,8 @@
 package my.example.customfault.configuration;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.cxf.Bus;
 import org.apache.cxf.binding.soap.interceptor.AbstractSoapInterceptor;
 import org.apache.cxf.bus.spring.SpringBus;
-import org.apache.cxf.interceptor.LoggingInInterceptor;
-import org.apache.cxf.interceptor.LoggingOutInterceptor;
 import org.apache.cxf.jaxws.EndpointImpl;
 import org.apache.cxf.transport.servlet.CXFServlet;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +14,6 @@ import de.codecentric.namespace.weatherservice.Weather;
 import de.codecentric.namespace.weatherservice.WeatherService;
 import jakarta.xml.ws.Endpoint;
 import my.example.customfault.configuration.customsoapfaults.CustomSoapFaultInterceptor;
-import my.example.customfault.configuration.customsoapfaults.SoapActionPreserver;
 
 @Configuration
 public class WebServiceConfiguration {
@@ -58,11 +52,6 @@ public class WebServiceConfiguration {
         endpoint.setWsdlLocation(weather().getWSDLDocumentLocation().toString());
         endpoint.publish(SERVICE_URL);
         endpoint.getOutFaultInterceptors().add(soapInterceptor());
-        endpoint.getOutFaultInterceptors().add(new LoggingOutInterceptor());
-        endpoint.getInFaultInterceptors().add(new LoggingInInterceptor());
-        endpoint.getInInterceptors().add(new LoggingInInterceptor());
-        endpoint.getOutInterceptors().add(new LoggingOutInterceptor());
-     //   endpoint.getInInterceptors().add(new SoapActionPreserver());
        
         
         System.out.println(endpoint.getProperties().get("schema-validation-enabled"));
