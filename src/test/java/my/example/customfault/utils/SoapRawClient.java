@@ -27,7 +27,7 @@ public class SoapRawClient {
 	    this.soapServiceUrl = soapServiceUrl;
 	}
 	
-	public SoapRawClientResponse callSoapService(InputStream xmlFile) throws InternalBusinessException {
+	public SoapRawClientResponse callSoapService(InputStream xmlFile,String soapActionNew) throws InternalBusinessException {
 		SoapRawClientResponse rawSoapResponse;
 		
 		LOGGER.debug("Calling SoapService with POST on Apache HTTP-Client and configured URL: {}", soapServiceUrl);
@@ -36,7 +36,7 @@ public class SoapRawClient {
 			Response httpResponseContainer = Request
 					.post(soapServiceUrl)
 					.bodyStream(xmlFile, contentTypeTextXmlUtf8())
-					.addHeader("SOAPAction", "\"" + soapAction + "\"")
+					//.addHeader("SOAPAction", "\"" + soapActionNew + "\"")
 					.execute();
 
 			rawSoapResponse = httpResponseContainer.handleResponse(response -> {
