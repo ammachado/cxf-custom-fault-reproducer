@@ -61,6 +61,7 @@ class WeatherServiceTest {
         //Thread.sleep(25000);
         Response httpResponseContainer = Request
                 .post(SOAP_SERVICE_URL)
+                .addHeader("SOAPAction","http://www.codecentric.de/namespace/weatherservice/GetCityForecastByZIP")
                 .bodyStream(xmlStream, contentTypeTextXmlUtf8())
                 .execute();
         HttpResponse httpResponse = httpResponseContainer.returnResponse();
@@ -70,6 +71,7 @@ class WeatherServiceTest {
         if (((BasicClassicHttpResponse) httpResponse).getEntity().getContentLength() > 0) {
             Document document = XmlUtils.parseFileStream2Document(((BasicClassicHttpResponse) httpResponse).getEntity().getContent());
             assertNull(document.getElementsByTagName("soap:Fault").item(0));
+
 
         }
 
