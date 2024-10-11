@@ -123,6 +123,7 @@ public final class XmlUtils {
 		try {
 	        parsedDoc = setUpDocumentBuilder().parse(contentAsStream);
 		} catch (Exception exception) {
+			exception.printStackTrace();
 			throw new InternalBusinessException("Problem beim Parsen des InputStream in ein Document: " + exception.getMessage(), exception);
 		}
 		return parsedDoc;

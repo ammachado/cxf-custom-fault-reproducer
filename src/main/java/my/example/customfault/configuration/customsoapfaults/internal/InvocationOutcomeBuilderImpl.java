@@ -216,8 +216,11 @@ public abstract class InvocationOutcomeBuilderImpl extends AbstractInvocationOut
         Object oldTarget = target;
 
         Class<?> clazz = target.getClass();
+        System.out.println(clazz);
         for (Field field : clazz.getDeclaredFields()) {
+        	
             Class<?> fieldType = field.getType();
+            System.out.println(fieldType.getCanonicalName());
             if (fieldType.isPrimitive() || field.getType().getName().startsWith("java.")) {
                 continue;
             }
@@ -243,6 +246,7 @@ public abstract class InvocationOutcomeBuilderImpl extends AbstractInvocationOut
 
     private static Object extractFieldValue(Field field, Object target) {
         try {
+        	System.out.println(field.getName()+":--:"+field.getClass().getCanonicalName());
             return FieldUtils.readField(field, target, true);
         } catch (NullPointerException | IllegalAccessException e) {
             return null;

@@ -21,6 +21,7 @@ public class WeatherServiceEndpoint implements WeatherService {
     
     @Override
     public ForecastReturn getCityForecastByZIP(ForecastRequest forecastRequest) throws WeatherException {
+    	System.out.println("\n\n\n\n"+forecastRequest);
         return weatherServiceController.getCityForecastByZIP(forecastRequest);
     }
     

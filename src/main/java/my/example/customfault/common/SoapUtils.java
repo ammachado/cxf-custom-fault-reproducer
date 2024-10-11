@@ -12,11 +12,6 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import de.codecentric.namespace.weatherservice.datatypes.MessageDetailType;
-import de.codecentric.namespace.weatherservice.datatypes.TechnicalSeverityCodeType;
-import my.example.customfault.configuration.customsoapfaults.internal.InvocationOutcomeRecorder;
-import my.example.customfault.configuration.customsoapfaults.internal.MsgDtlLocatorImpl;
-import my.example.customfault.configuration.customsoapfaults.internal.OutcomeLocatorImpl;
 import org.apache.commons.chain.impl.ContextBase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,56 +19,54 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import de.codecentric.namespace.weatherservice.datatypes.InvocationOutcomeType;
+import de.codecentric.namespace.weatherservice.datatypes.MessageDetailType;
+import de.codecentric.namespace.weatherservice.datatypes.TechnicalSeverityCodeType;
 import de.codecentric.namespace.weatherservice.exception.WeatherException;
 import de.codecentric.namespace.weatherservice.general.GetCityWeatherByZIPResponse;
 import de.codecentric.namespace.weatherservice.general.WeatherReturn;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Marshaller;
+import my.example.customfault.configuration.customsoapfaults.InvocationBuilder;
+import my.example.customfault.configuration.customsoapfaults.internal.InvocationOutcomeRecorder;
+import my.example.customfault.configuration.customsoapfaults.internal.MsgDtlLocatorImpl;
+import my.example.customfault.configuration.customsoapfaults.internal.OutcomeLocatorImpl;
 
 public class SoapUtils {
 
 	static Logger LOG = LoggerFactory.getLogger(SoapUtils.class);
 
-	private static Document getDocument() throws JAXBException, ParserConfigurationException {
+	private static Document getDocument(Object obj) throws JAXBException, ParserConfigurationException {
 
 		// EAP apps use Apache Chain to run operations
-		ContextBase context = new ContextBase();
-		InvocationOutcomeRecorder invocationOutcomeRecorder = new InvocationOutcomeRecorder();
-		invocationOutcomeRecorder.setOutcomeLocator(new OutcomeLocatorImpl());
-		invocationOutcomeRecorder.setMsgDtlLocator(new MsgDtlLocatorImpl());
-		invocationOutcomeRecorder.outcomeFailure(context, new MessageDetailType("id", TechnicalSeverityCodeType.F, 100200, "error"));
-
+		
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 		DocumentBuilder db = dbf.newDocumentBuilder();
 		Document document = db.newDocument();
 
-		GetCityWeatherByZIPResponse resp = new GetCityWeatherByZIPResponse();
-		WeatherReturn getCityWeatherByZIPResult = new WeatherReturn();
-		getCityWeatherByZIPResult.setCity("LONDON");
-		getCityWeatherByZIPResult.setResponseText("Cold");
-		resp.setGetCityWeatherByZIPResult(getCityWeatherByZIPResult);
+		
 
-		WeatherException exception = new WeatherException();
-		exception.setExceptionDetails("error");
-		exception.setBusinessErrorId("id");
-		exception.setBigBusinessErrorCausingMoneyLoss(true);
-		exception.setUuid("BigUUID");
+		
 
-		JAXBContext jaxbContext = JAXBContext.newInstance(WeatherException.class);
+		JAXBContext jaxbContext = JAXBContext.newInstance(obj.getClass());
 		Marshaller marshaller = jaxbContext.createMarshaller();
-		marshaller.marshal(exception, document);
+		marshaller.marshal(obj, document);
 
 		return document;
 	}
 
-	public  static String replaceFaultNodeAndGetSoapString(InputStream stream) {
+	
+	
+	public  static String replaceFaultNodeAndGetSoapString(InputStream stream,Object obj) {
 		StringWriter writer = new StringWriter();
 		Document mainDocument;
 		try {
 			mainDocument = XmlUtils.parseFileStream2Document(stream);
 			
-			Document replacementDocument = getDocument();
+			
+			Document replacementDocument = getDocument(obj);
 
 			// Identify the node to be replaced in the main document
 			NodeList nodeList = mainDocument.getElementsByTagNameNS("http://schemas.xmlsoap.org/soap/envelope/","Fault");
@@ -110,5 +103,4 @@ public class SoapUtils {
 		return writer.toString();
 			
 	}
-
 }

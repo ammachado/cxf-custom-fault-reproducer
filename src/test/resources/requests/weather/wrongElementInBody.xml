@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:gen="http://www.codecentric.de/namespace/weatherservice/general">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <gen:GetCityForecastByZIP>
+         <gen:ForecastRequest>
+            <gen:ZIP>gero et</gen:ZIP>
+            <gen:flagcolor>sonoras imperio</gen:flagcolor>
+            <gen:productName>ForecastUltimateXL</gen:productName>
+            <gen:ForecastCustomer>
+               <gen:Age>3</gen:Age>
+               <gen:test>error</gen:test>
+               <gen:Contribution>3</gen:Contribution>
+               <gen:MethodOfPayment>ventos tempestatesque</gen:MethodOfPayment>
+            </gen:ForecastCustomer>
+            </gen:ForecastRequest>
+      </gen:GetCityForecastByZIP>
+   </soapenv:Body>
+</soapenv:Envelope>

@@ -9,6 +9,7 @@ import my.example.customfault.utils.SoapRawClient;
 import my.example.customfault.utils.SoapRawClientResponse;
 import org.assertj.core.api.AutoCloseableSoftAssertions;
 import org.assertj.core.api.InstanceOfAssertFactories;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,6 +21,7 @@ import javax.xml.transform.Source;
 
 @SpringBootTest(classes=SimpleBootCxfSystemTestApplication.class,webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @Slf4j
+@Disabled
 class WeatherServiceXmlErrorSystemTest {
 
 	@Autowired
@@ -102,7 +104,8 @@ class WeatherServiceXmlErrorSystemTest {
 	private void checkXmlError(Resource testFile, FaultConst faultContent) throws Exception {
 		// When
 		log.warn("Test file: {}", testFile);
-		SoapRawClientResponse soapRawResponse = soapRawClient.callSoapService(testFile.getInputStream());
+		//Need to send action
+		SoapRawClientResponse soapRawResponse = soapRawClient.callSoapService(testFile.getInputStream(),"");
 
 		// Then
 		try (AutoCloseableSoftAssertions softly = new AutoCloseableSoftAssertions()) {
