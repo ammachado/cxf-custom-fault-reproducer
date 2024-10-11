@@ -69,8 +69,7 @@ class WeatherServiceTest {
         assertTrue(((BasicClassicHttpResponse) httpResponse).getEntity().getContentLength() > 0);
         if (((BasicClassicHttpResponse) httpResponse).getEntity().getContentLength() > 0) {
             Document document = XmlUtils.parseFileStream2Document(((BasicClassicHttpResponse) httpResponse).getEntity().getContent());
-            assertNull(document.getElementsByTagName("soap:Fault").item(0).getNodeName());
-
+            assertNull(document.getElementsByTagName("soap:Fault").item(0));
 
         }
 
