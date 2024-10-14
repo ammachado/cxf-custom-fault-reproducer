@@ -1,5 +1,6 @@
 package my.example.customfault.configuration;
-
+import java.util.HashMap;
+import java.util.Map;
 import org.apache.cxf.Bus;
 import org.apache.cxf.binding.soap.interceptor.AbstractSoapInterceptor;
 import org.apache.cxf.bus.spring.SpringBus;
@@ -52,9 +53,8 @@ public class WebServiceConfiguration {
         endpoint.setWsdlLocation(weather().getWSDLDocumentLocation().toString());
         endpoint.publish(SERVICE_URL);
         endpoint.getOutFaultInterceptors().add(soapInterceptor());
-       
-        
-        System.out.println(endpoint.getProperties().get("schema-validation-enabled"));
+        endpoint.setProperties(new HashMap<>());
+    	endpoint.getProperties().put("schema-validation-enabled","true");
         return endpoint;
     }
     
