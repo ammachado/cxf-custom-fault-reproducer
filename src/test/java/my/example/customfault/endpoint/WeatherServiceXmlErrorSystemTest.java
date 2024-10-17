@@ -11,8 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.Resource;
 import org.springframework.xml.transform.StringSource;
 
-import de.codecentric.namespace.weatherservice.datatypes.InvocationOutcomeType;
-import de.codecentric.namespace.weatherservice.exception.WeatherException;
+import de.codecentric.namespace.weatherservice.datatypes1.InvocationOutcomeType;
 import de.codecentric.namespace.weatherservice.general.ForecastReturn;
 import de.codecentric.namespace.weatherservice.general.GetCityForecastByZIPResponse;
 import jakarta.xml.bind.JAXB;

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
-		   xmlns="http://www.codecentric.de/namespace/weatherservice/datatypes"
-		   xmlns:tns="http://www.codecentric.de/namespace/weatherservice/datatypes"
-		   targetNamespace="http://www.codecentric.de/namespace/weatherservice/datatypes"
+		   xmlns="http://www.codecentric.de/namespace/weatherservice/datatypes1"
+		   xmlns:tns="http://www.codecentric.de/namespace/weatherservice/datatypes1"
+		   targetNamespace="http://www.codecentric.de/namespace/weatherservice/datatypes1"
 		   elementFormDefault="qualified"
 		   version="1.0">
 	<xs:complexType name="InvocationOutcomeType">

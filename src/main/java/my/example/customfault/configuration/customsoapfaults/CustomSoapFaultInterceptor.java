@@ -29,7 +29,7 @@ import org.apache.cxf.transport.http.AbstractHTTPDestination;
 import com.ctc.wstx.exc.WstxException;
 import com.ctc.wstx.exc.WstxUnexpectedCharException;
 
-import de.codecentric.namespace.weatherservice.datatypes.InvocationOutcomeType;
+import de.codecentric.namespace.weatherservice.datatypes1.InvocationOutcomeType;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.xml.bind.UnmarshalException;
 import lombok.extern.slf4j.Slf4j;
@@ -78,10 +78,15 @@ public class CustomSoapFaultInterceptor extends AbstractSoapInterceptor {
 			faultConst = FaultConst.SCHEME_VALIDATION_ERROR;
 			shouldSwapPayLoad = true;
 		}
-
+		else if (faultMessage != null
+				&& (faultMessage.contains("Unmarshalling Error:"))) {
+			faultConst = FaultConst.SCHEME_VALIDATION_ERROR;
+			shouldSwapPayLoad = true;
+		}
+		
 		if (shouldSwapPayLoad) {
 
-			Object newPayLoadObj = checkOuterWrapper(soapMessage, faultConst);
+			Object newPayLoadObj = checkOuterWrapper(soapMessage, faultConst,faultMessage);
 
 			InputStream inputStream = null;
 			try {
@@ -122,6 +127,8 @@ public class CustomSoapFaultInterceptor extends AbstractSoapInterceptor {
 		}
 
 	}
+
+	
 
 	private String getActionFromHeader(Map<String, List<String>> headers) {
 		String action = null;
@@ -190,7 +197,7 @@ public class CustomSoapFaultInterceptor extends AbstractSoapInterceptor {
 	/*
 	 * This will be the outermost class in the soap body
 	 */
-	private Object checkOuterWrapper(SoapMessage message, FaultConst faultMessage) {
+	private Object checkOuterWrapper(SoapMessage message, FaultConst faultMessage,String errorMessage) {
 
 		Object outerWrapper = null;
 		try {
@@ -238,7 +245,7 @@ public class CustomSoapFaultInterceptor extends AbstractSoapInterceptor {
 					Method[] methods = typeClass.getMethods();
 					Class nextClass = CxfSoapUtils.getNextClass(methods);
 					outerClass = ConstructorUtils.invokeConstructor(typeClass, new Object[0]);
-					createResponseObject(faultMessage, outerClass, nextClass);
+					createResponseObject(faultMessage, outerClass, nextClass,errorMessage);
 				}
 				return outerClass;
 			} else {
@@ -251,7 +258,7 @@ public class CustomSoapFaultInterceptor extends AbstractSoapInterceptor {
 					outerWrapper = ConstructorUtils.invokeConstructor(typeClass, new Object[0]);
 					log.info("The class created is {}", outerWrapper.getClass().getCanonicalName());
 					Class<?> innerWrapperType = CxfSoapUtils.getInnerWrapper(exchange);
-					createResponseObject(faultMessage, outerWrapper, innerWrapperType);
+					createResponseObject(faultMessage, outerWrapper, innerWrapperType,errorMessage);
 
 				}
 			}
@@ -265,7 +272,7 @@ public class CustomSoapFaultInterceptor extends AbstractSoapInterceptor {
 	/*
 	 * Crearte the Response Object to set in SoapBody
 	 */
-	private void createResponseObject(FaultConst faultMessage, Object outerWrapper, Class<?> innerWrapperType)
+	private void createResponseObject(FaultConst faultMessage, Object outerWrapper, Class<?> innerWrapperType,String errorMessage)
 			throws Exception {
 
 		
@@ -296,7 +303,7 @@ public class CustomSoapFaultInterceptor extends AbstractSoapInterceptor {
 				}
 			}
 			if (methodToInvoke != null) {
-				InvocationOutcomeType invocationOutComeType = CxfSoapUtils.createInvocationOutComeType(faultMessage);
+				InvocationOutcomeType invocationOutComeType = CxfSoapUtils.createInvocationOutComeType(faultMessage,errorMessage);
 				MethodUtils.invokeExactMethod(innerWrapper, methodToInvoke.getName(), invocationOutComeType);
 				MethodUtils.invokeExactMethod(outerWrapper, outerWrapperMethodToInvoke.getName(), innerWrapper);
 				log.info("The object {}", outerWrapper);

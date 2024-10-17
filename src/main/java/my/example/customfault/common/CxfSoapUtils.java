@@ -19,9 +19,9 @@ import org.apache.cxf.service.model.MessageInfo;
 import org.apache.cxf.service.model.OperationInfo;
 import org.apache.cxf.ws.addressing.JAXWSAConstants;
 
-import de.codecentric.namespace.weatherservice.datatypes.InvocationOutcomeType;
-import de.codecentric.namespace.weatherservice.datatypes.MessageDetailType;
-import de.codecentric.namespace.weatherservice.datatypes.MessageDetailsType;
+import de.codecentric.namespace.weatherservice.datatypes1.InvocationOutcomeType;
+import de.codecentric.namespace.weatherservice.datatypes1.MessageDetailType;
+import de.codecentric.namespace.weatherservice.datatypes1.MessageDetailsType;
 import lombok.extern.slf4j.Slf4j;
 import my.example.customfault.configuration.customsoapfaults.internal.StandardOutcomes;
 
@@ -150,18 +150,27 @@ public final class CxfSoapUtils {
 		return wrapped;
 	}
 
-	public static  InvocationOutcomeType createInvocationOutComeType( FaultConst faultConst) {
-
-		MessageDetailType messageDetail = new MessageDetailType();
-		messageDetail.setTechnicalReturnMessage(StandardOutcomes.VALIDATION_FAIL_OUTCOME_MSG);
+	public static  InvocationOutcomeType createInvocationOutComeType( FaultConst faultConst,String errorMessage) {
+		List<String> asList = null;
+		if(errorMessage!=null) {
+			errorMessage = errorMessage.replace("Unmarshalling Error:", "");
+			asList = Arrays.asList(errorMessage.split("-"));
+		}
 		MessageDetailsType details = new MessageDetailsType();
-		details.getMessageDetail().add(messageDetail);
+		
+		if(asList!=null && asList.size()>0) {
+			for(String error:asList) {
+				MessageDetailType messageDetail = new MessageDetailType();
+				messageDetail.setTechnicalReturnMessage(error);
+				details.getMessageDetail().add(messageDetail);
+			}
+		}
+		
 		InvocationOutcomeType outcome = new InvocationOutcomeType();
 		outcome.setCode(StandardOutcomes.VALIDATION_FAIL_OUTCOME_CODE);
 		outcome.setMessage(faultConst.getMessage());
 		outcome.setServiceReferenceId(UUID.randomUUID().toString());
 		outcome.setMessageDetails(details);
-
 		return outcome;
 
 	}

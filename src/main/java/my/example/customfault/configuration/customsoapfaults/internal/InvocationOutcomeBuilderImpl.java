@@ -1,14 +1,21 @@
 package my.example.customfault.configuration.customsoapfaults.internal;
 
-import de.codecentric.namespace.weatherservice.datatypes.FunctionalContextType;
-import de.codecentric.namespace.weatherservice.datatypes.InvocationOutcomeType;
-import de.codecentric.namespace.weatherservice.datatypes.RequestHeaderType;
-import de.codecentric.namespace.weatherservice.datatypes.UserPrincipalType;
-import jakarta.xml.bind.JAXB;
-import jakarta.xml.bind.JAXBContext;
-import jakarta.xml.bind.JAXBException;
-import my.example.customfault.configuration.customsoapfaults.internal.beans.Lens;
-import my.example.customfault.configuration.customsoapfaults.internal.beans.WSServiceContext;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.lang.reflect.Field;
+import java.security.Principal;
+import java.text.MessageFormat;
+import java.util.Objects;
+
+import javax.xml.namespace.QName;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.reflect.FieldUtils;
@@ -19,20 +26,15 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
-import javax.xml.namespace.QName;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.lang.reflect.Field;
-import java.security.Principal;
-import java.text.MessageFormat;
-import java.util.Objects;
+import de.codecentric.namespace.weatherservice.datatypes.FunctionalContextType;
+import de.codecentric.namespace.weatherservice.datatypes.RequestHeaderType;
+import de.codecentric.namespace.weatherservice.datatypes.UserPrincipalType;
+import de.codecentric.namespace.weatherservice.datatypes1.InvocationOutcomeType;
+import jakarta.xml.bind.JAXB;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import my.example.customfault.configuration.customsoapfaults.internal.beans.Lens;
+import my.example.customfault.configuration.customsoapfaults.internal.beans.WSServiceContext;
 
 /**
  * Invocation outcome builders for the version 1 schema.

@@ -1,14 +1,15 @@
 package my.example.customfault.configuration.customsoapfaults.internal;
 
-import de.codecentric.namespace.weatherservice.datatypes.FunctionalContextType;
-import de.codecentric.namespace.weatherservice.datatypes.InvocationOutcomeType;
-import de.codecentric.namespace.weatherservice.datatypes.RequestHeaderType;
-import de.codecentric.namespace.weatherservice.datatypes.TargetType;
-import de.codecentric.namespace.weatherservice.datatypes.UserPrincipalType;
-import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
+
+import de.codecentric.namespace.weatherservice.datatypes.FunctionalContextType;
+import de.codecentric.namespace.weatherservice.datatypes.RequestHeaderType;
+import de.codecentric.namespace.weatherservice.datatypes.TargetType;
+import de.codecentric.namespace.weatherservice.datatypes.UserPrincipalType;
+import de.codecentric.namespace.weatherservice.datatypes1.InvocationOutcomeType;
+import lombok.Setter;
 
 /**
  * Superclass for all invocation outcome builders.

@@ -1,18 +1,19 @@
 package my.example.customfault.configuration.customsoapfaults.internal.beans;
 
-import de.codecentric.namespace.weatherservice.datatypes.RequestHeaderType;
-import jakarta.activation.DataHandler;
-import lombok.Getter;
-import lombok.Setter;
-import my.example.customfault.configuration.customsoapfaults.internal.IInvocationOutcomeRecorder;
-import org.apache.commons.chain.impl.ContextBase;
-
 import java.io.Serial;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.chain.impl.ContextBase;
+
+import de.codecentric.namespace.weatherservice.datatypes.RequestHeaderType;
+import jakarta.activation.DataHandler;
+import lombok.Getter;
+import lombok.Setter;
+import my.example.customfault.configuration.customsoapfaults.internal.IInvocationOutcomeRecorder;
 
 /**
  * A Context implementation for Web Services.

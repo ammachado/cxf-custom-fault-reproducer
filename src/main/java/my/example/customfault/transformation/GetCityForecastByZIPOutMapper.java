@@ -7,8 +7,15 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import de.codecentric.namespace.weatherservice.datatypes.*;
+import de.codecentric.namespace.weatherservice.datatypes.ArrayOfForecast;
+import de.codecentric.namespace.weatherservice.datatypes.Forecast;
+import de.codecentric.namespace.weatherservice.datatypes.POP;
+import de.codecentric.namespace.weatherservice.datatypes.Temp;
+import de.codecentric.namespace.weatherservice.datatypes1.InvocationOutcomeType;
+import de.codecentric.namespace.weatherservice.datatypes1.MessageDetailType;
+import de.codecentric.namespace.weatherservice.datatypes1.MessageDetailsType;
 import de.codecentric.namespace.weatherservice.general.ForecastReturn;
+import my.example.customfault.configuration.customsoapfaults.internal.StandardOutcomes;
 
 public final class GetCityForecastByZIPOutMapper {
 
@@ -75,6 +82,21 @@ public final class GetCityForecastByZIPOutMapper {
 			//LOG.calenderMappingNotWorking(exception);
 		}
 		return xmlGregCal;
+	}
+
+
+	public static ForecastReturn mapGeneralOutlook2Forecast(MessageDetailsType details) {
+		ForecastReturn forecastReturn = objectFactoryGeneral.createForecastReturn();
+		if(details!=null) {
+			forecastReturn.setSuccess(false);
+			
+			InvocationOutcomeType outcome = new InvocationOutcomeType();
+			outcome.setCode(StandardOutcomes.FAILURE_OUTCOME_CODE);
+			outcome.setMessage(StandardOutcomes.VALIDATION_FAIL_OUTCOME_MSG);
+			outcome.setMessageDetails(details);
+			forecastReturn.setInvocationOutcome(outcome);
+		}
+		return forecastReturn;
 	}
 	
 }

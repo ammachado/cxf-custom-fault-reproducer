@@ -1,17 +1,18 @@
 package my.example.customfault.configuration.customsoapfaults.internal.beans;
 
-import de.codecentric.namespace.weatherservice.datatypes.MessageDetailType;
-import my.example.customfault.configuration.customsoapfaults.internal.StandardMessages;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.Validate;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
-
 import java.io.Serial;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.text.MessageFormat;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Validate;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
+import de.codecentric.namespace.weatherservice.datatypes1.MessageDetailType;
+import my.example.customfault.configuration.customsoapfaults.internal.StandardMessages;
 
 /**
  * The structure covers a single message detail about
