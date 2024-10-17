@@ -4,7 +4,6 @@ import java.util.HashMap;
 import org.apache.cxf.Bus;
 import org.apache.cxf.binding.soap.interceptor.AbstractSoapInterceptor;
 import org.apache.cxf.bus.spring.SpringBus;
-import org.apache.cxf.jaxb.CignaJaxBDataBinding;
 import org.apache.cxf.jaxws.EndpointImpl;
 import org.apache.cxf.transport.servlet.CXFServlet;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,11 +56,9 @@ public class WebServiceConfiguration {
         endpoint.getInInterceptors().add(new ChainManipulator());
         endpoint.getOutFaultInterceptors().add(soapInterceptor());
         endpoint.setProperties(new HashMap<>());
-        endpoint.setDataBinding(new CignaJaxBDataBinding());
         
     	//endpoint.getProperties().put("schema-validation-enabled","false");
     	//endpoint.getProperties().put("set-jaxb-validation-event-handler", "false");
-    	endpoint.getProperties().put("jaxb-validation-event-handler",new  org.apache.cxf.jaxb.CignaJaxbCustomValidator());
     	
         return endpoint;
     }

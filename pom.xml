@@ -167,6 +167,9 @@
 								${project.basedir}/src/main/resources/service-api-definition/Weather1.0.wsdl</wsdl>
 							<wsdlLocation>
 								classpath:service-api-definition/Weather1.0.wsdl</wsdlLocation>
+								<bindingFiles>
+									<bindingFile>${project.basedir}/src/main/resources/xjb/binding.xjb</bindingFile>
+								</bindingFiles>
 						</wsdlOption>
 					</wsdlOptions>
 				</configuration>

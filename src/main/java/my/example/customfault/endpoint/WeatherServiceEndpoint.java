@@ -24,9 +24,8 @@ public class WeatherServiceEndpoint implements WeatherService {
     @Override
     public ForecastReturn getCityForecastByZIP(ForecastRequest forecastRequest) throws WeatherException {
     
-    	int age = forecastRequest.getForecastCustomer().getAge();
-    	System.out.println("Age is :"+age);
-    	System.out.println("Age is :"+forecastRequest.getProductName());
+    	
+    	
         return weatherServiceController.getCityForecastByZIP(forecastRequest);
     }
     

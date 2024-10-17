@@ -13,7 +13,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 	<bean id="docliteral"
 		class="my.example.customfault.configuration.customsoapfaults.CignaDocLiteralInInterceptor" />
 	<bean id="soapFaultConverter" class="my.example.customfault.configuration.customsoapfaults.CustomSoapFaultInterceptor"/>
-	<bean id="customValidator" class="org.apache.cxf.jaxb.CignaJaxbCustomValidator"/>
+	
 		<bean
 			id="soapRequestHeaderInterceptorIn"
 			class="com.cigna.cxf.interceptors.soap.headers.CignaSoapHeaderInInterceptor">
@@ -56,7 +56,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 		<jaxws:properties>
 			<entry key="ws-security.validate.token" value="false" />
 			
-			<entry key="jaxb-validation-event-handler" value-ref="customValidator" ></entry>
+			
 		</jaxws:properties>
 		<jaxws:outFaultInterceptors>
 			<ref bean="soapFaultConverter"/>
@@ -64,9 +64,9 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 		<jaxws:outInterceptors>
 			<ref bean="soapRequestHeaderInterceptorOut"/>
 		</jaxws:outInterceptors>
-		<jaxws:dataBinding>
+		<!-- <jaxws:dataBinding>
 			<bean class="org.apache.cxf.jaxb.CignaJaxBDataBinding" />
 		</jaxws:dataBinding>
-
+ -->
 	</jaxws:endpoint>
 </beans>

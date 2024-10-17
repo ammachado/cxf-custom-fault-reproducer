@@ -29,26 +29,10 @@ public class WeatherServiceController {
     	
     	
     	
-		MessageDetailsType details =  new MessageDetailsType();
+		
 		
     	
-    	if(forecastRequest.getForecastCustomer().getAge() == 0) {
-    		MessageDetailType messageDetail = new MessageDetailType();
-    		messageDetail.setId("1");
-    		messageDetail.setTechnicalReturnCode(StandardMessages.DATA_TYPE_ERR_CODE);
-    		messageDetail.setTechnicalReturnMessage("Age is not defined");
-    		messageDetail.setTechnicalSeverityCode(TechnicalSeverityCodeType.F);
-    		details.getMessageDetail().add(messageDetail);
-    	}
-    	if(forecastRequest.getProductName() == null) {
-    		MessageDetailType messageDetail = new MessageDetailType();
-    		messageDetail.setId("1");
-    		messageDetail.setTechnicalReturnCode(StandardMessages.DATA_TYPE_ERR_CODE);
-    		messageDetail.setTechnicalReturnMessage("ProductName is null");
-    		messageDetail.setTechnicalSeverityCode(TechnicalSeverityCodeType.F);
-    		details.getMessageDetail().add(messageDetail);
-    	}
-        return GetCityForecastByZIPOutMapper.mapGeneralOutlook2Forecast(details);
+        return GetCityForecastByZIPOutMapper.mapGeneralOutlook2Forecast();
 	}
 	
 	/*

@@ -9,7 +9,7 @@ import java.util.Map;
 
 import org.apache.commons.chain.impl.ContextBase;
 
-import de.codecentric.namespace.weatherservice.datatypes.RequestHeaderType;
+import de.codecentric.namespace.weatherservice.datatypes.RequestHeader;
 import jakarta.activation.DataHandler;
 import lombok.Getter;
 import lombok.Setter;
@@ -51,7 +51,7 @@ public class WSServiceContext extends ContextBase {
     /**
      * The request header.
      */
-    private RequestHeaderType header;
+    private RequestHeader header;
 
     /**
      * The web service request data.

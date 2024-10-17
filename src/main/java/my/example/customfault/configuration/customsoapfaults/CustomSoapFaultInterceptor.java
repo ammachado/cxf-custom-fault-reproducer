@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
 import org.apache.cxf.binding.soap.SoapBindingConstants;
@@ -19,6 +20,7 @@ import org.apache.cxf.endpoint.Endpoint;
 import org.apache.cxf.helpers.CastUtils;
 import org.apache.cxf.interceptor.Fault;
 import org.apache.cxf.io.CachedOutputStream;
+import org.apache.cxf.jaxb.JAXBDataBinding;
 import org.apache.cxf.message.Exchange;
 import org.apache.cxf.message.Message;
 import org.apache.cxf.phase.Phase;
@@ -30,11 +32,14 @@ import com.ctc.wstx.exc.WstxException;
 import com.ctc.wstx.exc.WstxUnexpectedCharException;
 
 import de.codecentric.namespace.weatherservice.datatypes1.InvocationOutcomeType;
+import de.codecentric.namespace.weatherservice.datatypes1.MessageDetailType;
+import de.codecentric.namespace.weatherservice.datatypes1.MessageDetailsType;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.xml.bind.UnmarshalException;
 import lombok.extern.slf4j.Slf4j;
 import my.example.customfault.common.CxfSoapUtils;
 import my.example.customfault.common.FaultConst;
+import my.example.customfault.common.InterceptingValidationEventHandler;
 import my.example.customfault.common.SoapUtils;
 import my.example.customfault.logging.SoapFrameworkLogger;
 
@@ -56,37 +61,15 @@ public class CustomSoapFaultInterceptor extends AbstractSoapInterceptor {
 		Throwable faultCause = fault.getCause();
 		String faultMessage = fault.getMessage();
 		Object respObj = null;
-		System.out.println(faultCause != null ? faultCause : faultMessage);
+		System.out.println(fault.getMessage());
 		boolean shouldSwapPayLoad = false;
 		FaultConst faultConst = null;
-		if (containsFaultIndicatingNotSchemeCompliantXml(faultCause, faultMessage)) {
-			log.error("Fault cause {} ", faultMessage);
-			LOG.schemaValidationError(FaultConst.SCHEME_VALIDATION_ERROR, faultMessage);
-			faultConst = FaultConst.SCHEME_VALIDATION_ERROR;
-			shouldSwapPayLoad = true;
-			// WeatherSoapFaultHelper.buildWeatherFaultAndSet2SoapMessage(soapMessage,
-			// FaultConst.SCHEME_VALIDATION_ERROR);
-		} else if (containsFaultIndicatingSyntacticallyIncorrectXml(faultCause)) {
-			log.error("Fault cause {} ", faultMessage);
-			LOG.schemaValidationError(FaultConst.SYNTACTICALLY_INCORRECT_XML_ERROR, faultMessage);
-			faultConst = FaultConst.SYNTACTICALLY_INCORRECT_XML_ERROR;
-			shouldSwapPayLoad = true;
-			// WeatherSoapFaultHelper.buildWeatherFaultAndSet2SoapMessage(soapMessage,
-			// FaultConst.SYNTACTICALLY_INCORRECT_XML_ERROR);
-		} else if (faultMessage != null
-				&& (faultMessage.contains("Does it exist in service WSDL") || faultMessage.contains("No soap body"))) {
-			faultConst = FaultConst.SCHEME_VALIDATION_ERROR;
-			shouldSwapPayLoad = true;
-		}
-		else if (faultMessage != null
-				&& (faultMessage.contains("Unmarshalling Error:"))) {
-			faultConst = FaultConst.SCHEME_VALIDATION_ERROR;
-			shouldSwapPayLoad = true;
-		}
 		
-		if (shouldSwapPayLoad) {
-
-			Object newPayLoadObj = checkOuterWrapper(soapMessage, faultConst,faultMessage);
+		
+		if (StringUtils.isNotEmpty(fault.getMessage() )) {
+			
+			
+			Object newPayLoadObj = checkOuterWrapper(soapMessage, FaultConst.SCHEME_VALIDATION_ERROR,fault.getMessage());
 
 			InputStream inputStream = null;
 			try {

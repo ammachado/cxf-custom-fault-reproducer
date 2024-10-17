@@ -1,6 +1,7 @@
 package my.example.customfault.transformation;
 
 import java.time.ZonedDateTime;
+import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 import javax.xml.datatype.DatatypeConfigurationException;
@@ -32,7 +33,7 @@ public final class GetCityForecastByZIPOutMapper {
 
 		MessageDetailType messageDetail = new MessageDetailType();
 		MessageDetailsType details =  new MessageDetailsType();
-		details.getMessageDetail().add(messageDetail);
+		details.getMessageDetails().add(messageDetail);
 		InvocationOutcomeType outcome = new InvocationOutcomeType();
 		outcome.setMessageDetails(details);
 		forecastReturn.setInvocationOutcome(outcome);
@@ -42,14 +43,14 @@ public final class GetCityForecastByZIPOutMapper {
 
 	private static ArrayOfForecast generateForecastResult(String city) {
 		ArrayOfForecast forecastContainer = objectFactoryDatatypes.createArrayOfForecast();
-		forecastContainer.getForecast().add(generateForecast(city));
+		forecastContainer.getForecasts().add(generateForecast(city));
 		return forecastContainer;
 	}
 
 
 	private static Forecast generateForecast(String city) {
 		Forecast forecast = objectFactoryDatatypes.createForecast();	
-		forecast.setDate(generateCalendarFromNow());
+		forecast.setDate(Calendar.getInstance());
 		forecast.setDesciption("Vorhersage für " + city);
 		forecast.setTemperatures(generateTemp());
 		forecast.setProbabilityOfPrecipiation(generateRegenwahrscheinlichkeit());

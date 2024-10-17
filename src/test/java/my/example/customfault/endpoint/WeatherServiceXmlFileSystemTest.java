@@ -41,6 +41,6 @@ class WeatherServiceXmlFileSystemTest {
         assertNotNull(forecastReturn);
         assertTrue(forecastReturn.isSuccess());
         assertEquals("Weimar", forecastReturn.getCity());
-        assertEquals("22%", forecastReturn.getForecastResult().getForecast().get(0).getProbabilityOfPrecipiation().getDaytime());
+        assertEquals("22%", forecastReturn.getForecastResult().getForecasts().get(0).getProbabilityOfPrecipiation().getDaytime());
     }
 }

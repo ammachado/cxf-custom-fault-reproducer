@@ -154,7 +154,7 @@ public final class CxfSoapUtils {
 		List<String> asList = null;
 		if(errorMessage!=null) {
 			errorMessage = errorMessage.replace("Unmarshalling Error:", "");
-			asList = Arrays.asList(errorMessage.split("-"));
+			asList = Arrays.asList(errorMessage.split("##--##"));
 		}
 		MessageDetailsType details = new MessageDetailsType();
 		
@@ -162,7 +162,7 @@ public final class CxfSoapUtils {
 			for(String error:asList) {
 				MessageDetailType messageDetail = new MessageDetailType();
 				messageDetail.setTechnicalReturnMessage(error);
-				details.getMessageDetail().add(messageDetail);
+				details.getMessageDetails().add(messageDetail);
 			}
 		}
 		
