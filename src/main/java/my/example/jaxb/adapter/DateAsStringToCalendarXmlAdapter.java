@@ -1,4 +1,4 @@
-package com.cigna.ec.core.jaxb.adapter;
+package my.example.jaxb.adapter;
 
 import java.util.Calendar;
 
