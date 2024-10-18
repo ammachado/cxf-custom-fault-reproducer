@@ -1,21 +1,22 @@
 package my.example.customfault.configuration.customsoapfaults.internal;
 
-import de.codecentric.namespace.weatherservice.datatypes.InvocationOutcomeType;
-import de.codecentric.namespace.weatherservice.datatypes.MessageDetailType;
-import de.codecentric.namespace.weatherservice.datatypes.MessageDetailsType;
-import de.codecentric.namespace.weatherservice.datatypes.TechnicalSeverityCodeType;
+import java.lang.reflect.InvocationTargetException;
+import java.sql.SQLException;
+import java.util.Collection;
+import java.util.List;
+
+import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.Validate;
+
+import de.codecentric.namespace.weatherservice.datatypes1.InvocationOutcomeType;
+import de.codecentric.namespace.weatherservice.datatypes1.MessageDetailType;
+import de.codecentric.namespace.weatherservice.datatypes1.MessageDetailsType;
+import de.codecentric.namespace.weatherservice.datatypes1.TechnicalSeverityCodeType;
 import lombok.Getter;
 import lombok.Setter;
 import my.example.customfault.configuration.customsoapfaults.internal.beans.IMsgDtlLocator;
 import my.example.customfault.configuration.customsoapfaults.internal.beans.IOutcomeLocator;
 import my.example.customfault.configuration.customsoapfaults.internal.beans.InvocationOutcomeBean;
-import org.apache.commons.chain.Context;
-import org.apache.commons.lang3.Validate;
-
-import java.lang.reflect.InvocationTargetException;
-import java.sql.SQLException;
-import java.util.Collection;
-import java.util.List;
 
 /**
  * Standard invocation outcome recorder implementation.

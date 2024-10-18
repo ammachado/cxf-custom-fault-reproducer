@@ -1,13 +1,14 @@
 package my.example.customfault.configuration.customsoapfaults.internal.beans;
 
-import de.codecentric.namespace.weatherservice.datatypes.InvocationOutcomeType;
+import java.io.Serial;
+import java.io.Serializable;
+import java.util.Collection;
+
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-import java.io.Serial;
-import java.io.Serializable;
-import java.util.Collection;
+import de.codecentric.namespace.weatherservice.datatypes1.InvocationOutcomeType;
 
 /**
  * This class captures the outcome of a service invocation for a single unit of work.

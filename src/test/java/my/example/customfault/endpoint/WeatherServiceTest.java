@@ -4,12 +4,13 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static my.example.customfault.configuration.WebServiceConfiguration.BASE_URL;
 import static my.example.customfault.configuration.WebServiceConfiguration.SERVICE_URL;
 import static my.example.customfault.utils.TestHelper.generateDummyRequest;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.InputStream;
 
-import lombok.extern.slf4j.Slf4j;
-import my.example.customfault.SimpleBootCxfSystemTestApplication;
-import my.example.customfault.common.XmlUtils;
 import org.apache.hc.client5.http.fluent.Request;
 import org.apache.hc.client5.http.fluent.Response;
 import org.apache.hc.core5.http.ContentType;
@@ -18,14 +19,14 @@ import org.apache.hc.core5.http.message.BasicClassicHttpResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.w3c.dom.Document;
 
 import de.codecentric.namespace.weatherservice.WeatherException;
 import de.codecentric.namespace.weatherservice.general.ForecastRequest;
 import de.codecentric.namespace.weatherservice.general.ForecastReturn;
-import my.example.customfault.ApplicationTestConfiguration;
-import org.w3c.dom.Document;
-
-import java.io.InputStream;
+import lombok.extern.slf4j.Slf4j;
+import my.example.customfault.SimpleBootCxfSystemTestApplication;
+import my.example.customfault.common.XmlUtils;
 
 @SpringBootTest(classes= SimpleBootCxfSystemTestApplication.class, webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @Slf4j
@@ -46,7 +47,7 @@ class WeatherServiceTest {
         assertNotNull(forecastReturn);
         assertTrue(forecastReturn.isSuccess());
         assertEquals("Weimar", forecastReturn.getCity());
-        assertEquals("22%", forecastReturn.getForecastResult().getForecast().get(0).getProbabilityOfPrecipiation().getDaytime());
+        assertEquals("22%", forecastReturn.getForecastResult().getForecasts().get(0).getProbabilityOfPrecipiation().getDaytime());
     }
 
 

@@ -1,14 +1,22 @@
 package my.example.customfault.transformation;
 
 import java.time.ZonedDateTime;
+import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import de.codecentric.namespace.weatherservice.datatypes.*;
+import de.codecentric.namespace.weatherservice.datatypes.ArrayOfForecast;
+import de.codecentric.namespace.weatherservice.datatypes.Forecast;
+import de.codecentric.namespace.weatherservice.datatypes.POP;
+import de.codecentric.namespace.weatherservice.datatypes.Temp;
+import de.codecentric.namespace.weatherservice.datatypes1.InvocationOutcomeType;
+import de.codecentric.namespace.weatherservice.datatypes1.MessageDetailType;
+import de.codecentric.namespace.weatherservice.datatypes1.MessageDetailsType;
 import de.codecentric.namespace.weatherservice.general.ForecastReturn;
+import my.example.customfault.configuration.customsoapfaults.internal.StandardOutcomes;
 
 public final class GetCityForecastByZIPOutMapper {
 
@@ -25,7 +33,7 @@ public final class GetCityForecastByZIPOutMapper {
 
 		MessageDetailType messageDetail = new MessageDetailType();
 		MessageDetailsType details =  new MessageDetailsType();
-		details.getMessageDetail().add(messageDetail);
+		details.getMessageDetails().add(messageDetail);
 		InvocationOutcomeType outcome = new InvocationOutcomeType();
 		outcome.setMessageDetails(details);
 		forecastReturn.setInvocationOutcome(outcome);
@@ -35,14 +43,14 @@ public final class GetCityForecastByZIPOutMapper {
 
 	private static ArrayOfForecast generateForecastResult(String city) {
 		ArrayOfForecast forecastContainer = objectFactoryDatatypes.createArrayOfForecast();
-		forecastContainer.getForecast().add(generateForecast(city));
+		forecastContainer.getForecasts().add(generateForecast(city));
 		return forecastContainer;
 	}
 
 
 	private static Forecast generateForecast(String city) {
 		Forecast forecast = objectFactoryDatatypes.createForecast();	
-		forecast.setDate(generateCalendarFromNow());
+		forecast.setDate(Calendar.getInstance());
 		forecast.setDesciption("Vorhersage für " + city);
 		forecast.setTemperatures(generateTemp());
 		forecast.setProbabilityOfPrecipiation(generateRegenwahrscheinlichkeit());
@@ -75,6 +83,21 @@ public final class GetCityForecastByZIPOutMapper {
 			//LOG.calenderMappingNotWorking(exception);
 		}
 		return xmlGregCal;
+	}
+
+
+	public static ForecastReturn mapGeneralOutlook2Forecast(MessageDetailsType details) {
+		ForecastReturn forecastReturn = objectFactoryGeneral.createForecastReturn();
+		if(details!=null) {
+			forecastReturn.setSuccess(false);
+			
+			InvocationOutcomeType outcome = new InvocationOutcomeType();
+			outcome.setCode(StandardOutcomes.FAILURE_OUTCOME_CODE);
+			outcome.setMessage(StandardOutcomes.VALIDATION_FAIL_OUTCOME_MSG);
+			outcome.setMessageDetails(details);
+			forecastReturn.setInvocationOutcome(outcome);
+		}
+		return forecastReturn;
 	}
 	
 }

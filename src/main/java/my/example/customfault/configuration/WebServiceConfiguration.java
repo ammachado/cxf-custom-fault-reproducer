@@ -1,4 +1,5 @@
 package my.example.customfault.configuration;
+import java.util.HashMap;
 
 import org.apache.cxf.Bus;
 import org.apache.cxf.binding.soap.interceptor.AbstractSoapInterceptor;
@@ -13,6 +14,7 @@ import org.springframework.context.annotation.Configuration;
 import de.codecentric.namespace.weatherservice.Weather;
 import de.codecentric.namespace.weatherservice.WeatherService;
 import jakarta.xml.ws.Endpoint;
+import my.example.customfault.configuration.customsoapfaults.ChainManipulator;
 import my.example.customfault.configuration.customsoapfaults.CustomSoapFaultInterceptor;
 
 @Configuration
@@ -41,7 +43,7 @@ public class WebServiceConfiguration {
 //    	return new WeatherServiceEndpoint();
 //    }
     
-    @Bean
+  //  @Bean
     public Endpoint endpoint() {
         EndpointImpl endpoint = new EndpointImpl(springBus(), weatherService);
         // CXF JAX-WS implementation relies on the correct ServiceName as QName-Object with
@@ -51,10 +53,13 @@ public class WebServiceConfiguration {
         endpoint.setServiceName(weather().getServiceName());
         endpoint.setWsdlLocation(weather().getWSDLDocumentLocation().toString());
         endpoint.publish(SERVICE_URL);
+        endpoint.getInInterceptors().add(new ChainManipulator());
         endpoint.getOutFaultInterceptors().add(soapInterceptor());
-       
+        endpoint.setProperties(new HashMap<>());
         
-        System.out.println(endpoint.getProperties().get("schema-validation-enabled"));
+    	//endpoint.getProperties().put("schema-validation-enabled","false");
+    	//endpoint.getProperties().put("set-jaxb-validation-event-handler", "false");
+    	
         return endpoint;
     }
     

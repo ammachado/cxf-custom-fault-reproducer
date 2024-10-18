@@ -1,10 +1,10 @@
 package my.example.customfault.configuration.customsoapfaults.internal.beans;
 
-import lombok.RequiredArgsConstructor;
-
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
+
+import lombok.RequiredArgsConstructor;
 
 /**
  * Represents a lens, which is a functional abstraction that allows

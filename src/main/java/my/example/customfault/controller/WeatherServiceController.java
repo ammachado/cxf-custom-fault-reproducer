@@ -1,7 +1,12 @@
 package my.example.customfault.controller;
 
+import de.codecentric.namespace.weatherservice.datatypes1.MessageDetailType;
+import de.codecentric.namespace.weatherservice.datatypes1.MessageDetailsType;
+import de.codecentric.namespace.weatherservice.datatypes1.TechnicalSeverityCodeType;
 import de.codecentric.namespace.weatherservice.general.ForecastRequest;
 import de.codecentric.namespace.weatherservice.general.ForecastReturn;
+import my.example.customfault.configuration.customsoapfaults.internal.StandardMessages;
+import my.example.customfault.configuration.customsoapfaults.internal.beans.TechnicalSeverityCodeEnum;
 import my.example.customfault.transformation.GetCityForecastByZIPOutMapper;
 
 /*
@@ -18,7 +23,15 @@ public class WeatherServiceController {
 	    /*
 	     * We leave out inbound transformation, plausibility-checking, logging, backend-calls e.g.
 	     * for the moment
+	     * 
+	     * 
 	     */
+    	
+    	
+    	
+		
+		
+    	
         return GetCityForecastByZIPOutMapper.mapGeneralOutlook2Forecast();
 	}
 	

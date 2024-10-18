@@ -1,15 +1,9 @@
 package my.example.customfault.endpoint;
 
-import de.codecentric.namespace.weatherservice.exception.WeatherException;
-import jakarta.xml.bind.JAXB;
-import lombok.extern.slf4j.Slf4j;
-import my.example.customfault.SimpleBootCxfSystemTestApplication;
-import my.example.customfault.common.FaultConst;
-import my.example.customfault.utils.SoapRawClient;
-import my.example.customfault.utils.SoapRawClientResponse;
+import javax.xml.transform.Source;
+
 import org.assertj.core.api.AutoCloseableSoftAssertions;
 import org.assertj.core.api.InstanceOfAssertFactories;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,11 +11,18 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.Resource;
 import org.springframework.xml.transform.StringSource;
 
-import javax.xml.transform.Source;
+import de.codecentric.namespace.weatherservice.datatypes1.InvocationOutcomeType;
+import de.codecentric.namespace.weatherservice.general.ForecastReturn;
+import de.codecentric.namespace.weatherservice.general.GetCityForecastByZIPResponse;
+import jakarta.xml.bind.JAXB;
+import lombok.extern.slf4j.Slf4j;
+import my.example.customfault.SimpleBootCxfSystemTestApplication;
+import my.example.customfault.common.FaultConst;
+import my.example.customfault.utils.SoapRawClient;
+import my.example.customfault.utils.SoapRawClientResponse;
 
 @SpringBootTest(classes=SimpleBootCxfSystemTestApplication.class,webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @Slf4j
-@Disabled
 class WeatherServiceXmlErrorSystemTest {
 
 	@Autowired
@@ -56,7 +57,7 @@ class WeatherServiceXmlErrorSystemTest {
 	 * Non-Scheme-compliant Errors
 	 */
 	
-	@Test
+	//@Test
 	void xmlErrorNotXmlSchemeCompliantUnderRootElementTest() throws Exception {
         log.warn("Test Resource {} ", xmlErrorNotXmlSchemeCompliantUnderRootElementTestXml);
 		checkXmlError(xmlErrorNotXmlSchemeCompliantUnderRootElementTestXml, FaultConst.SCHEME_VALIDATION_ERROR);
@@ -105,7 +106,7 @@ class WeatherServiceXmlErrorSystemTest {
 		// When
 		log.warn("Test file: {}", testFile);
 		//Need to send action
-		SoapRawClientResponse soapRawResponse = soapRawClient.callSoapService(testFile.getInputStream(),"");
+		SoapRawClientResponse soapRawResponse = soapRawClient.callSoapService(testFile.getInputStream(),"http://www.codecentric.de/namespace/weatherservice/GetCityForecastByZIP");
 
 		// Then
 		try (AutoCloseableSoftAssertions softly = new AutoCloseableSoftAssertions()) {
@@ -118,12 +119,12 @@ class WeatherServiceXmlErrorSystemTest {
 						String bodyStringValue = soapRawResponse.getBodyStringValue();
 						System.out.println(bodyStringValue);
 			Source stringSource = new StringSource(soapRawResponse.getBodyStringValue());
-			WeatherException unmarshalled = JAXB.unmarshal(stringSource, WeatherException.class);
-
-			softly.assertThat(unmarshalled)
+			GetCityForecastByZIPResponse unmarshalled = JAXB.unmarshal(stringSource, GetCityForecastByZIPResponse.class);
+			ForecastReturn getCityForecastByZIPResult = unmarshalled.getGetCityForecastByZIPResult();
+			softly.assertThat(getCityForecastByZIPResult)
 					.isNotNull()
-					.hasFieldOrProperty("uuid")
-					.extracting(WeatherException::getBusinessErrorId, InstanceOfAssertFactories.type(String.class))
+					.hasFieldOrProperty("InvocationOutcome")
+					.extracting(ForecastReturn::getInvocationOutcome, InstanceOfAssertFactories.type(InvocationOutcomeType.class))
 					
 					;
 		}

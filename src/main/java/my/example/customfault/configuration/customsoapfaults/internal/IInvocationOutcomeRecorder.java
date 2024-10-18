@@ -1,11 +1,12 @@
 package my.example.customfault.configuration.customsoapfaults.internal;
 
-import de.codecentric.namespace.weatherservice.datatypes.InvocationOutcomeType;
-import de.codecentric.namespace.weatherservice.datatypes.MessageDetailType;
-import org.apache.commons.chain.Context;
-
 import java.util.Collection;
 import java.util.List;
+
+import org.apache.commons.chain.Context;
+
+import de.codecentric.namespace.weatherservice.datatypes1.InvocationOutcomeType;
+import de.codecentric.namespace.weatherservice.datatypes1.MessageDetailType;
 
 /**
  * Interface implemented by classes that record invocation outcome.

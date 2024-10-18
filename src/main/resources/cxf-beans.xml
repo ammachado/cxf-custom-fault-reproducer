@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:http-conf="http://cxf.apache.org/transports/http/configuration"
+	xmlns:jaxws="http://cxf.apache.org/jaxws"
+	xsi:schemaLocation="
+http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+
+	<bean id="chain"
+		class="my.example.customfault.configuration.customsoapfaults.ChainManipulator" />
+	<bean id="docliteral"
+		class="my.example.customfault.configuration.customsoapfaults.CignaDocLiteralInInterceptor" />
+	<bean id="soapFaultConverter" class="my.example.customfault.configuration.customsoapfaults.CustomSoapFaultInterceptor"/>
+	
+		<bean
+			id="soapRequestHeaderInterceptorIn"
+			class="com.cigna.cxf.interceptors.soap.headers.CignaSoapHeaderInInterceptor">
+	</bean>
+	<bean
+			id="soapRequestHeaderInterceptorOut"
+			class="com.cigna.cxf.interceptors.soap.headers.CignaSoapHeaderOutInterceptor">
+	</bean>
+	
+	<bean id="wss4jInInterceptor" class="org.apache.cxf.ws.security.wss4j.WSS4JInInterceptor">
+		<property name="properties">
+			<map>
+				<entry key="action" value="UsernameToken" />
+				<entry key="passwordType" value="PasswordText" />
+			</map>
+		</property>
+	</bean>
+
+	<bean id="authenticationInterceptorOut" class="org.apache.cxf.ws.security.wss4j.WSS4JOutInterceptor">
+		<property name="properties">
+			<map>
+				<entry
+					key="#{T(org.apache.wss4j.dom.handler.WSHandlerConstants).ACTION}"
+					value="#{T(org.apache.wss4j.dom.handler.WSHandlerConstants).USERNAME_TOKEN}" />
+				<entry
+					key="#{T(org.apache.wss4j.dom.handler.WSHandlerConstants).PASSWORD_TYPE}"
+					value="#{T(org.apache.wss4j.common.WSS4JConstants).PW_TEXT}" />
+			</map>
+		</property>
+	</bean>
+	<jaxws:endpoint id="IndividualBenefits"
+		implementor="my.example.customfault.endpoint.WeatherServiceEndpoint"
+		address="/WeatherSoapService_1.0">
+		<jaxws:inInterceptors>
+			<ref bean="chain" />
+			<ref bean="docliteral" />
+			<ref bean="wss4jInInterceptor" />
+			<ref bean="soapRequestHeaderInterceptorIn" />
+		</jaxws:inInterceptors>
+		<jaxws:properties>
+			<entry key="ws-security.validate.token" value="false" />
+			
+			
+		</jaxws:properties>
+		<jaxws:outFaultInterceptors>
+			<ref bean="soapFaultConverter"/>
+		</jaxws:outFaultInterceptors>
+		<jaxws:outInterceptors>
+			<ref bean="soapRequestHeaderInterceptorOut"/>
+		</jaxws:outInterceptors>
+		<!-- <jaxws:dataBinding>
+			<bean class="org.apache.cxf.jaxb.CignaJaxBDataBinding" />
+		</jaxws:dataBinding>
+ -->
+	</jaxws:endpoint>
+</beans>

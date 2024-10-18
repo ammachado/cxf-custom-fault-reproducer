@@ -36,7 +36,7 @@ public class SoapRawClient {
 			Response httpResponseContainer = Request
 					.post(soapServiceUrl)
 					.bodyStream(xmlFile, contentTypeTextXmlUtf8())
-					//.addHeader("SOAPAction", "\"" + soapActionNew + "\"")
+					.addHeader("SOAPAction", "\"" + soapActionNew + "\"")
 					.execute();
 
 			rawSoapResponse = httpResponseContainer.handleResponse(response -> {

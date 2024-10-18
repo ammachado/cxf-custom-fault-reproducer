@@ -1,6 +1,7 @@
 package my.example.customfault.endpoint;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import de.codecentric.namespace.weatherservice.WeatherException;
 import de.codecentric.namespace.weatherservice.WeatherService;
@@ -9,7 +10,6 @@ import de.codecentric.namespace.weatherservice.general.ForecastReturn;
 import de.codecentric.namespace.weatherservice.general.WeatherInformationReturn;
 import de.codecentric.namespace.weatherservice.general.WeatherReturn;
 import my.example.customfault.controller.WeatherServiceController;
-import org.springframework.stereotype.Service;
 
 
 
@@ -19,9 +19,13 @@ public class WeatherServiceEndpoint implements WeatherService {
     @Autowired
     private WeatherServiceController weatherServiceController;
     
+   
+    
     @Override
     public ForecastReturn getCityForecastByZIP(ForecastRequest forecastRequest) throws WeatherException {
-    	System.out.println("\n\n\n\n"+forecastRequest);
+    
+    	
+    	
         return weatherServiceController.getCityForecastByZIP(forecastRequest);
     }
     

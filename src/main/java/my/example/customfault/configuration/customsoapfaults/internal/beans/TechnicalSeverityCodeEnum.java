@@ -1,9 +1,9 @@
 package my.example.customfault.configuration.customsoapfaults.internal.beans;
 
-import de.codecentric.namespace.weatherservice.datatypes.TechnicalSeverityCodeType;
-
 import java.io.Serial;
 import java.util.Arrays;
+
+import de.codecentric.namespace.weatherservice.datatypes1.TechnicalSeverityCodeType;
 
 /**
  * This class is intended to provide additional meaning if the intent

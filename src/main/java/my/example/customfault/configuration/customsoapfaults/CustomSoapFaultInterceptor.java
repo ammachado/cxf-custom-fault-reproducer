@@ -5,56 +5,42 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.lang.reflect.Method;
-import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.UUID;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
-import org.apache.commons.lang3.reflect.TypeUtils;
-import org.apache.cxf.binding.soap.Soap11;
 import org.apache.cxf.binding.soap.SoapBindingConstants;
 import org.apache.cxf.binding.soap.SoapMessage;
 import org.apache.cxf.binding.soap.interceptor.AbstractSoapInterceptor;
-import org.apache.cxf.databinding.WrapperHelper;
+import org.apache.cxf.endpoint.Endpoint;
 import org.apache.cxf.helpers.CastUtils;
 import org.apache.cxf.interceptor.Fault;
 import org.apache.cxf.io.CachedOutputStream;
+import org.apache.cxf.jaxb.JAXBDataBinding;
 import org.apache.cxf.message.Exchange;
 import org.apache.cxf.message.Message;
-import org.apache.cxf.message.MessageContentsList;
 import org.apache.cxf.phase.Phase;
-import org.apache.cxf.service.Service;
-import org.apache.cxf.service.invoker.MethodDispatcher;
-import org.apache.cxf.service.model.BindingMessageInfo;
 import org.apache.cxf.service.model.BindingOperationInfo;
-import org.apache.cxf.service.model.MessageInfo;
 import org.apache.cxf.service.model.MessagePartInfo;
-import org.apache.cxf.service.model.ServiceModelUtil;
-import org.apache.cxf.transport.Destination;
 import org.apache.cxf.transport.http.AbstractHTTPDestination;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
 
 import com.ctc.wstx.exc.WstxException;
 import com.ctc.wstx.exc.WstxUnexpectedCharException;
 
-import de.codecentric.namespace.weatherservice.datatypes.InvocationOutcomeType;
-import de.codecentric.namespace.weatherservice.datatypes.MessageDetailType;
-import de.codecentric.namespace.weatherservice.datatypes.MessageDetailsType;
-import de.codecentric.namespace.weatherservice.datatypes.TechnicalSeverityCodeType;
-import de.codecentric.namespace.weatherservice.general.ForecastReturn;
-import de.codecentric.namespace.weatherservice.general.GetCityForecastByZIPResponse;
+import de.codecentric.namespace.weatherservice.datatypes1.InvocationOutcomeType;
+import de.codecentric.namespace.weatherservice.datatypes1.MessageDetailType;
+import de.codecentric.namespace.weatherservice.datatypes1.MessageDetailsType;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.xml.bind.UnmarshalException;
 import lombok.extern.slf4j.Slf4j;
+import my.example.customfault.common.CxfSoapUtils;
 import my.example.customfault.common.FaultConst;
+import my.example.customfault.common.InterceptingValidationEventHandler;
 import my.example.customfault.common.SoapUtils;
-import my.example.customfault.configuration.customsoapfaults.internal.InvocationOutcomeBuilderImpl;
-import my.example.customfault.configuration.customsoapfaults.internal.StandardOutcomes;
 import my.example.customfault.logging.SoapFrameworkLogger;
 
 @Slf4j
@@ -75,37 +61,21 @@ public class CustomSoapFaultInterceptor extends AbstractSoapInterceptor {
 		Throwable faultCause = fault.getCause();
 		String faultMessage = fault.getMessage();
 		Object respObj = null;
-
+		System.out.println(fault.getMessage());
 		boolean shouldSwapPayLoad = false;
-		if (containsFaultIndicatingNotSchemeCompliantXml(faultCause, faultMessage)) {
-			log.error("Fault cause {} ", faultMessage);
-			LOG.schemaValidationError(FaultConst.SCHEME_VALIDATION_ERROR, faultMessage);
-			faultMessage = FaultConst.SCHEME_VALIDATION_ERROR.getMessage();
-			shouldSwapPayLoad = true;
-			// WeatherSoapFaultHelper.buildWeatherFaultAndSet2SoapMessage(soapMessage,
-			// FaultConst.SCHEME_VALIDATION_ERROR);
-		} else if (containsFaultIndicatingSyntacticallyIncorrectXml(faultCause)) {
-			log.error("Fault cause {} ", faultMessage);
-			LOG.schemaValidationError(FaultConst.SYNTACTICALLY_INCORRECT_XML_ERROR, faultMessage);
-			faultMessage = FaultConst.SYNTACTICALLY_INCORRECT_XML_ERROR.getMessage();
-			shouldSwapPayLoad = true;
-			// WeatherSoapFaultHelper.buildWeatherFaultAndSet2SoapMessage(soapMessage,
-			// FaultConst.SYNTACTICALLY_INCORRECT_XML_ERROR);
-		} else if (faultMessage != null && faultMessage.contains("Does it exist in service WSDL")) {
-			faultMessage = FaultConst.SCHEME_VALIDATION_ERROR.getMessage();
-			log.warn("*****************************************");
-			shouldSwapPayLoad = true;
-		}
-
-		if (shouldSwapPayLoad) {
-
-			Object newPayLoadObj = checkOuterWrapper(soapMessage, faultMessage);
+		FaultConst faultConst = null;
+		
+		
+		if (StringUtils.isNotEmpty(fault.getMessage() )) {
+			
+			
+			Object newPayLoadObj = checkOuterWrapper(soapMessage, FaultConst.SCHEME_VALIDATION_ERROR,fault.getMessage());
 
 			InputStream inputStream = null;
 			try {
 
 				if (newPayLoadObj == null) {
-					log.error("New PayLoad could not be obtained");
+
 				} else {
 					String newPayLoad = null;
 					Exchange exchange = soapMessage.getExchange();
@@ -115,9 +85,9 @@ public class CustomSoapFaultInterceptor extends AbstractSoapInterceptor {
 					cs.flush();
 					CachedOutputStream csnew = (CachedOutputStream) soapMessage.getContent(OutputStream.class);
 					inputStream = csnew.getInputStream();
-					
+
 					newPayLoad = SoapUtils.replaceFaultNodeAndGetSoapString(inputStream, newPayLoadObj);
-					log.info("New Response {}",newPayLoad);
+					log.info("New Response {}", newPayLoad);
 					Message outMessage = Optional.ofNullable(exchange.getOutMessage())
 							.orElse(exchange.getOutFaultMessage());
 					exchange.setOutMessage(outMessage);
@@ -139,6 +109,26 @@ public class CustomSoapFaultInterceptor extends AbstractSoapInterceptor {
 
 		}
 
+	}
+
+	
+
+	private String getActionFromHeader(Map<String, List<String>> headers) {
+		String action = null;
+		if (headers != null) {
+			List<String> sa = headers.get(SoapBindingConstants.SOAP_ACTION);
+			log.info("{}",sa);
+			if (sa != null && !sa.isEmpty()) {
+				action = sa.get(0);
+				if (action.startsWith("\"") || action.startsWith("\'")) {
+					action = action.substring(1, action.length() - 1);
+					log.debug("Soap Action is {}",action);
+				}
+			} else {
+				log.error("Soap Action could not be determined");
+			}
+		}
+		return action;
 	}
 
 	private boolean containsFaultIndicatingNotSchemeCompliantXml(Throwable faultCause, String faultMessage) {
@@ -190,102 +180,72 @@ public class CustomSoapFaultInterceptor extends AbstractSoapInterceptor {
 	/*
 	 * This will be the outermost class in the soap body
 	 */
-	private Object checkOuterWrapper(SoapMessage message, String faultMessage) {
-
-		if (message.getVersion() instanceof Soap11) {
-			Map<String, List<String>> headers = CastUtils.cast((Map<?, ?>) message.get(Message.PROTOCOL_HEADERS));
-			if (headers != null) {
-				List<String> sa = headers.get(SoapBindingConstants.SOAP_ACTION);
-				if (sa != null && !sa.isEmpty()) {
-					String action = sa.get(0);
-					if (action.startsWith("\"") || action.startsWith("\'")) {
-						action = action.substring(1, action.length() - 1);
-					}
-					System.out.println("\n\n\n\n\n\n\n action is:" + action + "\n\n\n\n\n");
-				} else {
-					System.out.println("\n\n\n\n\n\n\n action ignored \n\n\n\n\n");
-				}
-			} else {
-				
-				Exchange exchange = message.getExchange();
-				log.info("{}",exchange.getDestination());
-				Destination destination = exchange.getDestination();
-				
-				log.info("{}",exchange.getBinding().getBindingInfo().getService().getTopLevelDoc());
-
-			}
-		} else {
-			System.out.println("\n\n\n\n\n\n\n action isgone \n\n\n\n\n");
-		}
+	private Object checkOuterWrapper(SoapMessage message, FaultConst faultMessage,String errorMessage) {
 
 		Object outerWrapper = null;
 		try {
 			Exchange exchange = message.getExchange();
 			BindingOperationInfo operation = exchange.getBindingOperationInfo();
-
+			/*
+			 * When the error is at root level or soap header level where we cannot
+			 * determine which operation to invoke
+			 * 
+			 */
 			if (operation == null) {
-				log.error("BindingOperation not obtained");
-				return null;
-			}
-			log.info("Binding operation is {}", operation);
-
-			final List<MessagePartInfo> parts;
-			final BindingMessageInfo bmsg;
-			boolean client = isRequestor(message);
-
-			if (operation.getOutput() != null) {
-				bmsg = operation.getOutput();
-				parts = bmsg.getMessageParts();
-				log.info("{}", bmsg);
-				log.info("{}", parts);
-			}
-			log.info("{}\n{}", operation.getOperationInfo().getOutput(),
-					operation.getOperationInfo().getOutput().getMessageParts());
-			List<MessagePartInfo> messageParts = operation.getOperationInfo().getOutput().getMessageParts();
-			log.info("{}", messageParts.size());
-
-			if (messageParts.size() > 0) {
-				// This is the Top Most Class in the Soap Body
-				Class<?> typeClass = messageParts.get(0).getMessageInfo().getFirstMessagePart().getTypeClass();
-				outerWrapper = ConstructorUtils.invokeConstructor(typeClass, new Object[0]);
-				log.info("The class created is {}", outerWrapper.getClass().getCanonicalName());
-				if (outerWrapper.getClass().getMethods() != null) {
-					Method[] outerWrapperMethods = outerWrapper.getClass().getMethods();
-					Method outerWrapperMethodToInvoke = null;
-					Class<?> innerWrapperType = getInnerWrapper(exchange);
-
-					for (Method outerWrapperMethod : outerWrapperMethods) {
-						// Better checks needed
-						if (outerWrapperMethod.getParameterCount() == 1
-								&& outerWrapperMethod.getParameterTypes()[0].equals(innerWrapperType)) {
-							outerWrapperMethodToInvoke = outerWrapperMethod;
-							break;
+				Endpoint endpoint = exchange.getEndpoint();
+				Collection<BindingOperationInfo> bops = endpoint.getEndpointInfo().getBinding().getOperations();
+				Map<String, List<String>> headers = CastUtils
+						.cast((Map<?, ?>) exchange.getInMessage().get(Message.PROTOCOL_HEADERS));
+				String action = getActionFromHeader(headers);
+				BindingOperationInfo bindingOp = null;
+				for (BindingOperationInfo boi : bops) {
+					if (CxfSoapUtils.isActionMatch(message, boi, action)) {
+						if (bindingOp != null) {
+							// more than one op with the same action, will need to parse normally
+							return null;
 						}
+						bindingOp = boi;
 					}
-
-					Object innerWrapper = ConstructorUtils.invokeConstructor(getInnerWrapper(exchange), new Object[0]);
-					log.info("Inner wrapper is {}", innerWrapper);
-					Method[] innerWrapperMethods = innerWrapper.getClass().getMethods();
-					Method methodToInvoke = null;
-					for (Method innerWrapperMethod : innerWrapperMethods) {
-						// Simpler way is to create a setter method
-						// need to check if there is a efficient way
-						if (innerWrapperMethod.getParameterCount() == 1
-								&& innerWrapperMethod.getParameterTypes()[0].equals(InvocationOutcomeType.class)) {
-							methodToInvoke = innerWrapperMethod;
+					if (CxfSoapUtils.matchWSAAction(boi, action)) {
+						if (bindingOp != null && bindingOp != boi) {
+							// more than one op with the same action, will need to parse normally
+							return null;
 						}
-					}
-					if (methodToInvoke != null) {
-						InvocationOutcomeType invocationOutComeType = createInvocationOutComeType(message,
-								faultMessage);
-						MethodUtils.invokeExactMethod(innerWrapper, methodToInvoke.getName(), invocationOutComeType);
-						MethodUtils.invokeExactMethod(outerWrapper, outerWrapperMethodToInvoke.getName(), innerWrapper);
-						log.info("The object {}", outerWrapper);
-					} else {
-						log.info("Methid not avaialbel");
+						bindingOp = boi;
 					}
 				}
+
+				if (bindingOp == null) {
+					return null;
+				} else {
+					operation = bindingOp;
+				}
+				Object outerClass = null;
+				List<MessagePartInfo> messageParts = operation.getOperationInfo().getOutput().getMessageParts();
+				if (messageParts.size() > 0) {
+					// This is the Top Most Class in the Soap Body
+					Class<?> typeClass = messageParts.get(0).getMessageInfo().getFirstMessagePart().getTypeClass();
+					Method[] methods = typeClass.getMethods();
+					Class nextClass = CxfSoapUtils.getNextClass(methods);
+					outerClass = ConstructorUtils.invokeConstructor(typeClass, new Object[0]);
+					createResponseObject(faultMessage, outerClass, nextClass,errorMessage);
+				}
+				return outerClass;
+			} else {
+
+				List<MessagePartInfo> messageParts = operation.getOperationInfo().getOutput().getMessageParts();
+
+				if (messageParts.size() > 0) {
+					// This is the Top Most Class in the Soap Body
+					Class<?> typeClass = messageParts.get(0).getMessageInfo().getFirstMessagePart().getTypeClass();
+					outerWrapper = ConstructorUtils.invokeConstructor(typeClass, new Object[0]);
+					log.info("The class created is {}", outerWrapper.getClass().getCanonicalName());
+					Class<?> innerWrapperType = CxfSoapUtils.getInnerWrapper(exchange);
+					createResponseObject(faultMessage, outerWrapper, innerWrapperType,errorMessage);
+
+				}
 			}
+
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}
@@ -293,37 +253,48 @@ public class CustomSoapFaultInterceptor extends AbstractSoapInterceptor {
 	}
 
 	/*
-	 * Might have multiple inner wrappers , just demo
+	 * Crearte the Response Object to set in SoapBody
 	 */
-	private Class<?> getInnerWrapper(Exchange exchange) {
+	private void createResponseObject(FaultConst faultMessage, Object outerWrapper, Class<?> innerWrapperType,String errorMessage)
+			throws Exception {
 
-		BindingOperationInfo bop = exchange.getBindingOperationInfo();
-		BindingOperationInfo newbop = bop.getWrappedOperation();
-		BindingMessageInfo output = newbop.getOutput();
-		MessageInfo wrappedMsgInfo = newbop.getOutput().getMessageInfo();
+		
+		if (outerWrapper.getClass().getMethods() != null) {
+			Method[] outerWrapperMethods = outerWrapper.getClass().getMethods();
+			Method outerWrapperMethodToInvoke = null;
 
-		Class<?> wrapped = null;
-		if (wrappedMsgInfo.getMessagePartsNumber() > 0) {
-			log.info("{}", output.getMessageParts());
-			int messagePartsNumber = wrappedMsgInfo.getMessagePartsNumber();
-			wrapped = wrappedMsgInfo.getFirstMessagePart().getTypeClass();
+			for (Method outerWrapperMethod : outerWrapperMethods) {
+				// Better checks needed
+				if (outerWrapperMethod.getParameterCount() == 1
+						&& outerWrapperMethod.getParameterTypes()[0].equals(innerWrapperType)) {
+					outerWrapperMethodToInvoke = outerWrapperMethod;
+					break;
+				}
+			}
+
+			Object innerWrapper = ConstructorUtils.invokeConstructor(innerWrapperType, new Object[0]);
+
+			log.info("Inner wrapper is {}", innerWrapper);
+			Method[] innerWrapperMethods = innerWrapper.getClass().getMethods();
+			Method methodToInvoke = null;
+			for (Method innerWrapperMethod : innerWrapperMethods) {
+				// Simpler way is to create a setter method
+				// need to check if there is a efficient way
+				if (innerWrapperMethod.getParameterCount() == 1
+						&& innerWrapperMethod.getParameterTypes()[0].equals(InvocationOutcomeType.class)) {
+					methodToInvoke = innerWrapperMethod;
+				}
+			}
+			if (methodToInvoke != null) {
+				InvocationOutcomeType invocationOutComeType = CxfSoapUtils.createInvocationOutComeType(faultMessage,errorMessage);
+				MethodUtils.invokeExactMethod(innerWrapper, methodToInvoke.getName(), invocationOutComeType);
+				MethodUtils.invokeExactMethod(outerWrapper, outerWrapperMethodToInvoke.getName(), innerWrapper);
+				log.info("The object {}", outerWrapper);
+			} else {
+				log.info("Methid not avaialbel");
+			}
+
 		}
-		return wrapped;
-	}
-
-	private InvocationOutcomeType createInvocationOutComeType(SoapMessage soapMessage, String faultMessage) {
-
-		MessageDetailType messageDetail = new MessageDetailType();
-		messageDetail.setTechnicalReturnMessage(StandardOutcomes.VALIDATION_FAIL_OUTCOME_MSG);
-		MessageDetailsType details = new MessageDetailsType();
-		details.getMessageDetail().add(messageDetail);
-		InvocationOutcomeType outcome = new InvocationOutcomeType();
-		outcome.setCode(StandardOutcomes.VALIDATION_FAIL_OUTCOME_CODE);
-		outcome.setMessage(faultMessage);
-		outcome.setServiceReferenceId(UUID.randomUUID().toString());
-		outcome.setMessageDetails(details);
-
-		return outcome;
 
 	}
 }
