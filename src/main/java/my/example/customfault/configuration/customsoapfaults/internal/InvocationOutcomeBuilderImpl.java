@@ -27,7 +27,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 import de.codecentric.namespace.weatherservice.datatypes.FunctionalContextType;
-import de.codecentric.namespace.weatherservice.datatypes.RequestHeaderType;
+import de.codecentric.namespace.weatherservice.datatypes.RequestHeader;
 import de.codecentric.namespace.weatherservice.datatypes.UserPrincipalType;
 import de.codecentric.namespace.weatherservice.datatypes1.InvocationOutcomeType;
 import jakarta.xml.bind.JAXB;
@@ -61,7 +61,7 @@ public abstract class InvocationOutcomeBuilderImpl extends AbstractInvocationOut
     private static final String SKIPPING_HEADER_DEBUG_MSG = "InvocationOutcomeBuilderImpl::extractRequestHeader - skipping SOAPHeader {0}: {1}.";
 
     //functionalContext.userPrincipal.userId"
-    private static final Lens<RequestHeaderType, String> userIdLens = Lens.of(RequestHeaderType::getFunctionalContext, RequestHeaderType::withFunctionalContext)
+    private static final Lens<RequestHeader, String> userIdLens = Lens.of(RequestHeader::getFunctionalContext, RequestHeader::withFunctionalContext)
             .andThen(Lens.of(FunctionalContextType::getUserPrincipal, FunctionalContextType::withUserPrincipal))
             .andThen(Lens.of(UserPrincipalType::getUserId, UserPrincipalType::withUserId));
     // CHECKSTYLE:ON
@@ -95,7 +95,7 @@ public abstract class InvocationOutcomeBuilderImpl extends AbstractInvocationOut
     @Override
     public String extractRequestHeader(final WSServiceContext context) {
         String            refid;
-        RequestHeaderType header   = null;
+        RequestHeader header   = null;
         final Object[]    headers  = context.getSoapHeaders();
         boolean           generate;
 
@@ -138,16 +138,16 @@ public abstract class InvocationOutcomeBuilderImpl extends AbstractInvocationOut
     }
 
     /**
-     * Extract RequestHeaderDocument or RequestHeaderType from the SOAPHeader array.
+     * Extract RequestHeaderDocument or RequestHeader from the SOAPHeader array.
      *
      * @param headers the array of SOAP Headers.
      *
      * @return the request header or null if not found.
      */
-    private RequestHeaderType extractRequestHeader(final Object[] headers) {
+    private RequestHeader extractRequestHeader(final Object[] headers) {
         Objects.requireNonNull(headers, "headers is null");
 
-        RequestHeaderType header = null;
+        RequestHeader header = null;
 
         for (int i = 0; i < headers.length && header == null; i++) {
 
@@ -157,7 +157,7 @@ public abstract class InvocationOutcomeBuilderImpl extends AbstractInvocationOut
 
             try {
 
-                 headers[i] = header = JAXB.unmarshal(new StringReader(asString(tempHeader)), RequestHeaderType.class);
+                 headers[i] = header = JAXB.unmarshal(new StringReader(asString(tempHeader)), RequestHeader.class);
 
 
             } catch (Exception e) {

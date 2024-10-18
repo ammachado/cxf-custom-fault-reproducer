@@ -3,12 +3,15 @@ package org.apache.cxf.jaxb;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.validation.Schema;
+
 import jakarta.xml.bind.ValidationEvent;
 import jakarta.xml.bind.ValidationEventHandler;
 
-public class CignaJaxbCustomValidator implements   ValidationEventHandler{
+public class MyJaxbValidator implements   ValidationEventHandler{
     private final List<ValidationEvent> events = new ArrayList<ValidationEvent>();
 
+   
   
     /**
      * Return an array of ValidationEvent objects containing a copy of each of

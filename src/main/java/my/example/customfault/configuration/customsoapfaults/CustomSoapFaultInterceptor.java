@@ -66,10 +66,10 @@ public class CustomSoapFaultInterceptor extends AbstractSoapInterceptor {
 		FaultConst faultConst = null;
 		
 		
-		if (StringUtils.isNotEmpty(fault.getMessage() )) {
+		if (StringUtils.isNotEmpty(fault.getMessage()) && fault.getMessage().contains("SCHEMA ERROR:")) {
+			String error = fault.getMessage().replace("SCHEMA ERROR:", "");
 			
-			
-			Object newPayLoadObj = checkOuterWrapper(soapMessage, FaultConst.SCHEME_VALIDATION_ERROR,fault.getMessage());
+			Object newPayLoadObj = checkOuterWrapper(soapMessage, FaultConst.SCHEME_VALIDATION_ERROR,error);
 
 			InputStream inputStream = null;
 			try {

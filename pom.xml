@@ -171,6 +171,11 @@
 									<bindingFile>${project.basedir}/src/main/resources/xjb/binding.xjb</bindingFile>
 								</bindingFiles>
 						</wsdlOption>
+						<wsdlOption>
+							<wsdl>${project.basedir}/src/main/resources/ws/ecr/individual/location/IndividualBenefits_7_0.wsdl</wsdl>
+							<wsdlLocation>classpath:ws/ecr/individual/location/IndividualBenefits_7_0.wsdl</wsdlLocation>
+							<bindingFiles><bindingFile>${project.basedir}/src/main/resources/xjb/binding.xjb</bindingFile></bindingFiles>
+						</wsdlOption>
 					</wsdlOptions>
 				</configuration>
 				<dependencies>

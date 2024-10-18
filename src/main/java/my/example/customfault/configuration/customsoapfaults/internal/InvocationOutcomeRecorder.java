@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.Validate;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import de.codecentric.namespace.weatherservice.datatypes1.InvocationOutcomeType;
 import de.codecentric.namespace.weatherservice.datatypes1.MessageDetailType;
@@ -25,10 +26,10 @@ import my.example.customfault.configuration.customsoapfaults.internal.beans.Invo
 @Setter
 public class InvocationOutcomeRecorder implements IInvocationOutcomeRecorder {
 
-    /** The message detail locator. */
+    @Autowired
     private IMsgDtlLocator msgDtlLocator;
 
-    /** The invocation outcome locator. */
+   @Autowired
     private IOutcomeLocator outcomeLocator;
 
     /**
@@ -293,7 +294,7 @@ public class InvocationOutcomeRecorder implements IInvocationOutcomeRecorder {
         if (outcome.getMessageDetails() == null) {
             outcome.setMessageDetails(new MessageDetailsType());
         }
-        outcome.getMessageDetails().getMessageDetail().add(detail);
+        outcome.getMessageDetails().getMessageDetails().add(detail);
     }
 
     /**
@@ -325,7 +326,7 @@ public class InvocationOutcomeRecorder implements IInvocationOutcomeRecorder {
         if (outcome.getMessageDetails() == null) {
             outcome.setMessageDetails(new MessageDetailsType());
         }
-        outcome.getMessageDetails().getMessageDetail().add(detail);
+        outcome.getMessageDetails().getMessageDetails().add(detail);
     }
 
     private static MessageDetailType createMessageDetailType(final Throwable throwable) {

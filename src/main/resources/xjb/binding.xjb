@@ -15,7 +15,6 @@
 		<serializable uid="1" />
 		<xjc:simple />
 				<xjc:javaType name="java.util.Calendar" xmlType="xs:date" adapter="com.cigna.ec.core.jaxb.adapter.DateAsStringToCalendarXmlAdapter"/>
-				<xjc:javaType name="de.codecentric.namespace.weatherservice.datatypes.ProductName" xmlType="s:ProductName" adapter="com.cigna.ec.core.jaxb.adapter.ProductTypeAdapter"/>
 		
 			</globalBindings>
 </bindings>

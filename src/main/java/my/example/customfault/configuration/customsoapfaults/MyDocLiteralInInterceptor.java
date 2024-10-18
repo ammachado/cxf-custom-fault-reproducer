@@ -1,12 +1,14 @@
 package my.example.customfault.configuration.customsoapfaults;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
 
+import org.apache.cxf.annotations.SchemaValidation.SchemaValidationType;
 import org.apache.cxf.common.logging.LogUtils;
 import org.apache.cxf.interceptor.Fault;
-import org.apache.cxf.jaxb.CignaJaxbCustomValidator;
 import org.apache.cxf.jaxb.JAXBDataBinding;
+import org.apache.cxf.jaxb.MyJaxbValidator;
 import org.apache.cxf.message.Message;
 import org.apache.cxf.wsdl.interceptors.DocLiteralInInterceptor;
 
@@ -16,20 +18,26 @@ import lombok.extern.slf4j.Slf4j;
 import my.example.customfault.common.InterceptingValidationEventHandler;
 
 @Slf4j
-public class CignaDocLiteralInInterceptor extends DocLiteralInInterceptor {
-	public static final String KEEP_PARAMETERS_WRAPPER = CignaDocLiteralInInterceptor.class.getName()
+public class MyDocLiteralInInterceptor extends DocLiteralInInterceptor {
+	public static final String KEEP_PARAMETERS_WRAPPER = MyDocLiteralInInterceptor.class.getName()
 			+ ".DocLiteralInInterceptor.keep-parameters-wrapper";
 
-	private static final Logger LOG = LogUtils.getL7dLogger(CignaDocLiteralInInterceptor.class);
+	private static final Logger LOG = LogUtils.getL7dLogger(MyDocLiteralInInterceptor.class);
 
+	
 	@Override
 	public void handleMessage(Message message) {
 		
 		System.out.println("Here in doc literal");
+		 
+		  //To enable to set schema on the unmarshaller
+		  message.put(Message.SCHEMA_VALIDATION_ENABLED,SchemaValidationType.REQUEST);
+		  
+		  message.put(JAXBDataBinding.READER_VALIDATION_EVENT_HANDLER, new MyJaxbValidator());
 		
-		message.put(JAXBDataBinding.READER_VALIDATION_EVENT_HANDLER, new CignaJaxbCustomValidator());
 		super.handleMessage(message);
-		CignaJaxbCustomValidator invoked = (CignaJaxbCustomValidator)message.get(JAXBDataBinding.READER_VALIDATION_EVENT_HANDLER);
+		System.out.println("Here in doc literal after");
+		MyJaxbValidator invoked = (MyJaxbValidator)message.get(JAXBDataBinding.READER_VALIDATION_EVENT_HANDLER);
 		System.out.println("Here \n\n\n"+invoked.getEvents());
 		/*
 		 * log.error("invoked"+invoked); String error=""; boolean isError = false; if
@@ -44,14 +52,18 @@ public class CignaDocLiteralInInterceptor extends DocLiteralInInterceptor {
 		 * 
 		 * }
 		 */
+		List<String> errors = new ArrayList<String>();
 		if(invoked.getEvents()!=null && invoked.getEvents().size()>0 ) {
 			String error = "";
 			for(ValidationEvent event:invoked.getEvents()) {
-				error+=event.getMessage()+"##--##";
+				if(event.getMessage().contains("cvc-type.3.1.3:")) {
+					String trimmedMessage = event.getMessage().replace("cvc-type.3.1.3:", "");
+					errors.add(trimmedMessage);
+				}
 				
 			}
 			System.out.println(error);
-			throw new Fault(error,LOG);
+			throw new Fault("SCHEMA ERROR: "+String.join("##--##", errors),LOG);
 		}
 
 	}
@@ -62,4 +74,5 @@ public class CignaDocLiteralInInterceptor extends DocLiteralInInterceptor {
 		return handler;
 	}
 
+	
 }

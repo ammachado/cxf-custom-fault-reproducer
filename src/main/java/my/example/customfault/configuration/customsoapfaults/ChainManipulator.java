@@ -36,7 +36,7 @@ public class ChainManipulator extends AbstractPhaseInterceptor<Message>{
 		if(interceptor!=null) {
 			message.getInterceptorChain().remove(interceptor);
 		}
-		message.getInterceptorChain().add(new CignaDocLiteralInInterceptor());
+		message.getInterceptorChain().add(new MyDocLiteralInInterceptor());
 	}
 
 }

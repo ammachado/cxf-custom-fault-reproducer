@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 
 import de.codecentric.namespace.weatherservice.datatypes.FunctionalContextType;
-import de.codecentric.namespace.weatherservice.datatypes.RequestHeaderType;
+import de.codecentric.namespace.weatherservice.datatypes.RequestHeader;
 import de.codecentric.namespace.weatherservice.datatypes.TargetType;
 import de.codecentric.namespace.weatherservice.datatypes.UserPrincipalType;
 import de.codecentric.namespace.weatherservice.datatypes1.InvocationOutcomeType;
@@ -35,7 +35,7 @@ public abstract class AbstractInvocationOutcomeBuilder implements IInvocationOut
      *
      * @return a new request header document.
      */
-    public RequestHeaderType newRequestHeader() {
+    public RequestHeader newRequestHeader() {
         final de.codecentric.namespace.weatherservice.datatypes.ObjectFactory objectFactory =
                 new de.codecentric.namespace.weatherservice.datatypes.ObjectFactory();
 
@@ -53,7 +53,7 @@ public abstract class AbstractInvocationOutcomeBuilder implements IInvocationOut
                 .withUserPrincipal(userPrincipalType)
                 .withTarget(targetType);
 
-        return objectFactory.createRequestHeaderType()
+        return objectFactory.createRequestHeader()
                 .withServiceReferenceId(newServiceReferenceId())
                 .withFunctionalContext(functionalContextType);
     }
